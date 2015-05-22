@@ -1,0 +1,8 @@
+---
+vms:
+  - name: "master.local"
+    box:  "puppetlabs/centos-7.0-64-nocm"
+    roles: [ "master" ]
+  - name: "satellite.local"
+    box:  "rhel-70-x64-vbox-nocm"
+    roles: [ "satellite" ]

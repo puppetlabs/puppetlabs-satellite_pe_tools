@@ -1,0 +1,23 @@
+---
+# Boxes from http://puppet-vagrant-boxes.puppetlabs.com/
+# Updated: 2013-08-08
+boxes:
+  'rhel-70-x64-vbox-nocm': 'http://int-resources.ops.puppetlabs.net/vagrant/puppetless_boxes/rhel-70.virtualbox.box'
+  'centos-510-x64-vbox436-nocm': 'https://s3.amazonaws.com/puppet-vagrant-boxes/centos-510-x64-virtualbox-nocm.box'
+  'centos-65-x64-vbox436-nocm': 'https://s3.amazonaws.com/puppet-vagrant-boxes/centos-65-x64-virtualbox-nocm.box'
+  'debian-74-x64-vbox436-nocm': 'https://s3.amazonaws.com/puppet-vagrant-boxes/debian-74-x86_64-virtualbox-nocm.box'
+  'ubuntu-server-1204-x64-vbox436-nocm': 'https://s3.amazonaws.com/puppet-vagrant-boxes/ubuntu-1204-x86_64-virtualbox-nocm.box'
+
+  # The boxfiles below are used by optional virtual machines commented out in
+  # the vms.yaml file. If you provide an appropriate boxfile for a platform
+  # below, it can be un-commented in the vms.yaml file and used by Vagrant.
+
+  'sles-11sp1-x64-vbox4210-nocm-saleseng-4': 'https://s3.amazonaws.com/saleseng/boxfiles/sles-11sp1-x64-vbox4210-nocm-saleseng-4.box'
+
+  'solaris-10u9-x64': 'https://saleseng.s3.amazonaws.com/boxfiles/solaris10u9_64.box'
+
+  'solaris-11': 'http://int-resources.ops.puppetlabs.net/vagrant/solaris11-nocm.box'
+
+  'windows-server-2008-r2-x64-v2': 'https://s3.amazonaws.com/saleseng/boxfiles/windows-server-2008-r2-x64-v2.box'
+  'windows-server-2012r2-v3': 'https://s3.amazonaws.com/saleseng/boxfiles/win2012r2-x64-virtualbox-nocm.box'
+  'osx-109-x64': 'http://int-resources.ops.puppetlabs.net/vagrant/puppetless_boxes/osx-109-x64-vmware-nocm-fusion.box'

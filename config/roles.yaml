@@ -1,0 +1,32 @@
+---
+roles:
+  master:
+    private_networks:
+      - ip: '0.0.0.0'
+        auto_network: true
+    provider:
+      type: virtualbox
+      customize:
+        - [modifyvm, !ruby/sym id, '--memory', 2048]
+        - [modifyvm, !ruby/sym id, '--ioapic', 'on']
+        - [modifyvm, !ruby/sym id, '--cpus', '4']
+    provisioners:
+      - type: shell
+        inline: "iptables -F"
+      - type: hosts
+      - type: pe_bootstrap
+        role: !ruby/sym master
+        autosign: true
+  satellite:
+    private_networks:
+      - ip: '0.0.0.0'
+        auto_network: true
+    provider:
+      type: virtualbox
+    provisioners:
+      - type: shell
+        inline: "iptables -F"
+      - type: hosts
+      - type: shell
+        inline: |-
+          /bin/bash /vagrant/config/scripts/install_satellite.sh
