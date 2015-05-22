@@ -13,3 +13,10 @@ tmtags
 ## VIM
 *.swp
 tags
+
+junit
+
+## Dev env stuff
+.vagrant
+.files
+.pe_build
