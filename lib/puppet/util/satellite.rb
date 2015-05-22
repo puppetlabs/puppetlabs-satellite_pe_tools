@@ -1,64 +1,45 @@
-# copy this file to your report dir - e.g. /usr/lib/ruby/1.8/puppet/reports/
-# add this report in your puppetmaster reports - e.g, in your puppet.conf add:
-# reports=log, foreman # (or any other reports you want)
-# configuration is in /etc/puppet/foreman.yaml
-
 require 'puppet'
+require 'puppet/util'
 require 'net/http'
 require 'net/https'
 require 'uri'
 require 'yaml'
-begin
-  require 'json'
-rescue LoadError
-  # Debian packaging guidelines state to avoid needing rubygems, so
-  # we only try to load it if the first require fails (for RPMs)
-  begin
-    require 'rubygems' rescue nil
-    require 'json'
-  rescue LoadError => e
-    puts "You need the `json` gem to use the Foreman ENC script"
-    # code 1 is already used below
-    exit 2
+require 'json'
+
+module Puppet::Util::Satellite
+  def settings
+    return @settings if @settings
+    $settings_file = "/etc/puppetlabs/puppet/pe_satellite.yaml"
+
+    @settings = YAML.load_file($settings_file)
   end
-end
 
-$settings_file = "/etc/puppetlabs/puppet/pe_satellite.yaml"
-
-SETTINGS = YAML.load_file($settings_file)
-
-Puppet::Reports.register_report(:foreman) do
-  Puppet.settings.use(:reporting)
-  desc "Sends reports directly to Satellite"
-
-  def process
-    begin
-      # check for report metrics
-      raise(Puppet::ParseError, "Invalid report: can't find metrics information for #{self.host}") if self.metrics.nil?
-
-      uri = URI.parse(foreman_url)
-      http = Net::HTTP.new(uri.host, uri.port)
-      http.use_ssl     = uri.scheme == 'https'
-      if http.use_ssl?
-        if SETTINGS['ssl_ca'] && !SETTINGS['ssl_ca'].empty?
-          http.ca_file = SETTINGS['ssl_ca']
-          http.verify_mode = OpenSSL::SSL::VERIFY_PEER
-        else
-          http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-        end
-        if SETTINGS['ssl_cert'] && !SETTINGS['ssl_cert'].empty? && SETTINGS['ssl_key'] && !SETTINGS['ssl_key'].empty?
-          http.cert = OpenSSL::X509::Certificate.new(File.read(SETTINGS['ssl_cert']))
-          http.key  = OpenSSL::PKey::RSA.new(File.read(SETTINGS['ssl_key']), nil)
-        end
+  def create_http
+    @uri = URI.parse(satellite_url)
+    http = Net::HTTP.new(uri.host, uri.port)
+    http.use_ssl     = uri.scheme == 'https'
+    if http.use_ssl?
+      if SETTINGS['ssl_ca'] && !SETTINGS['ssl_ca'].empty?
+        http.ca_file = SETTINGS['ssl_ca']
+        http.verify_mode = OpenSSL::SSL::VERIFY_PEER
+      else
+        http.verify_mode = OpenSSL::SSL::VERIFY_NONE
       end
-      req = Net::HTTP::Post.new("#{uri.path}/api/reports")
-      req.add_field('Accept', 'application/json,version=2' )
-      req.content_type = 'application/json'
-      req.body         = {'report' => generate_report}.to_json
-      response = http.request(req)
-    rescue Exception => e
-      raise Puppet::Error, "Could not send report to Foreman at #{foreman_url}/api/reports: #{e}\n#{e.backtrace}"
+      if SETTINGS['ssl_cert'] && !SETTINGS['ssl_cert'].empty? && SETTINGS['ssl_key'] && !SETTINGS['ssl_key'].empty?
+        http.cert = OpenSSL::X509::Certificate.new(File.read(SETTINGS['ssl_cert']))
+        http.key  = OpenSSL::PKey::RSA.new(File.read(SETTINGS['ssl_key']), nil)
+      end
     end
+    http
+  end
+
+  def submit_request(endpoint, body)
+    http = create_http
+    req = Net::HTTP::Post.new("#{@uri.path}#{endpoint}")
+    req.add_field('Accept', 'application/json,version=2' )
+    req.content_type = 'application/json'
+    req.body = body.to_json
+    http.request(req)
   end
 
   def generate_report
@@ -176,8 +157,8 @@ Puppet::Reports.register_report(:foreman) do
                 end
   end
 
-  def foreman_url
+
+  def satellite_url
     SETTINGS['url'] || raise(Puppet::Error, "Must provide URL in #{$settings_file}")
   end
-
 end
