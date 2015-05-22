@@ -9,4 +9,8 @@
 # Learn more about module testing here:
 # http://docs.puppetlabs.com/guides/tests_smoke.html
 #
-include pe_satellite
+class { 'pe_satellite':
+  satellite_url => 'https://satellite.local',
+  verify_satellite_certificate => false,
+  ssl_ca => ''
+}

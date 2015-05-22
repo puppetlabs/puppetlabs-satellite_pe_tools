@@ -37,6 +37,7 @@
 # Copyright 2015 Puppet Labs
 class pe_satellite(
   $satellite_url,
+  $verify_satellite_certificate = true,
   $ssl_ca = '',
   $ssl_cert = '',
   $ssl_key = ''
@@ -45,22 +46,28 @@ class pe_satellite(
   $parsed_hash = parse_url($satellite_url)
   $satellite_hostname = $parsed_hash['hostname']
 
-  if $ssl_ca {
-    $ssl_ca_real = $ssl_ca
-  } else {
-    $ssl_ca_real = "/etc/puppetlabs/puppet/ssl/certs/ca.pem"
-  }
+  if $verify_satellite_certificate {
+    if $ssl_ca {
+      $ssl_ca_real = $ssl_ca
+    } else {
+      $ssl_ca_real = "/etc/puppetlabs/puppet/ssl/certs/ca.pem"
+    }
 
-  if $ssl_cert {
-    $ssl_cert_real = $ssl_cert
-  } else {
-    $ssl_cert_real = "/etc/puppetlabs/puppet/ssl/certs/${satellite_hostname}.pem"
-  }
+    if $ssl_cert {
+      $ssl_cert_real = $ssl_cert
+    } else {
+      $ssl_cert_real = "/etc/puppetlabs/puppet/ssl/certs/${satellite_hostname}.pem"
+    }
 
-  if $ssl_key {
-    $ssl_key_real = $ssl_key
+    if $ssl_key {
+      $ssl_key_real = $ssl_key
+    } else {
+      $ssl_key_real = "/etc/puppetlabs/puppet/ssl/private_keys/${satellite_hostname}.pem"
+    }
   } else {
-    $ssl_key_real = "/etc/puppetlabs/puppet/ssl/private_keys/${satellite_hostname}.pem"
+    $ssl_ca_real = false
+    $ssl_key_real = false
+    $ssl_cert_real = false
   }
 
   $satellite_config = {
