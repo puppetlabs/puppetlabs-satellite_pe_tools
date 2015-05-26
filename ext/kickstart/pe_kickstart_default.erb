@@ -81,6 +81,10 @@ echo "updating system time"
 # update all the base packages from the updates repository  
 #yum -t -y -e 0 update  
 
+
+# and add the puppet package  
+yum -t -y -e 0 install pe-agent  
+
 echo "Setting Certificate Extensions"
 cat > /etc/puppetlabs/puppet/csr_attributes.yaml << EOF
 <%= snippet 'pe-trusted-facts.conf' %>
@@ -91,9 +95,6 @@ cat > /etc/puppetlabs/puppet/puppet.conf << EOF
 <%= snippet 'pe-puppet.conf' %>  
 EOF  
  
-# and add the puppet package  
-yum -t -y -e 0 install pe-agent  
-
 sync  
  
 <% if @provisioning_type == nil || @provisioning_type == 'host' -%>  
