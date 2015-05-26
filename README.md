@@ -1,8 +1,8 @@
 # Set Up Steps
 
-* [Classify Puppet Enterprise Masters][Classify Puppet Enterprise Masters]
-* [Allow Puppet Enterprise Master to Send Data to Satellite][Allow Puppet Enterprise Master to Send Data to Satellite]
-* [Satellite Server Identity Verification][Satellite Server Identity Verification]
+* [Classify Puppet Enterprise Masters](#Classify-Puppet-Enterprise-Masters)
+* [Allow Puppet Enterprise Master to Send Data to Satellite](#Allow-Puppet-Enterprise–Master-to-Send-Data-to-Satellite)
+* [Satellite Server Identity Verification](#Satellite-Server-Identify-Verification)
 
 # Classify Puppet Enterprise Masters
 
