@@ -20,3 +20,4 @@ junit
 .vagrant
 .files
 .pe_build
+Gemfile.lock
