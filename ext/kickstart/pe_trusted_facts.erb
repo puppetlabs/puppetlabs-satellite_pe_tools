@@ -1,0 +1,37 @@
+<%#  
+kind: snippet
+name: PE Trusted Facts
+%>  
+
+<%= require 'yaml'
+   puppet_registered_extensions = ['pp_uid',
+     'pp_instance_id',
+     'pp_image_name',
+     'pp_preshared_key',
+     'pp_cost_center',
+     'pp_product',
+     'pp_project',
+     'pp_application',
+     'pp_service',
+     'pp_employee',
+     'pp_created_by',
+     'pp_environment',
+     'pp_role',
+     'pp_software_version',
+     'pp_department',
+     'pp_cluster',
+     'pp_provisioner'
+   ]
+
+   csr_attributes = {'custom_attributes' => Hash.new, 'extension_requests' => Hash.new}
+
+   puppet_registered_extensions.each do |extension|
+     csr_attributes['extension_requests'][extension] = @host.params[extension] if @host.params[extention]
+   end
+
+   if @host.params['pp_challenge_password']
+     csr_attributes['custom_attributes']['1.2.840.113549.1.9.7'] = @host.params['pp_challenge_password']
+   end
+
+   csr_attributes.to_yaml
+%>
