@@ -11,6 +11,4 @@
 #
 class { 'pe_satellite':
   satellite_url => 'https://satellite.local',
-  verify_satellite_certificate => false,
-  ssl_ca => ''
 }
