@@ -12,7 +12,7 @@ class Puppet::Node::Facts::Satellite < Puppet::Node::Facts::Puppetdb
                           'name' => request.instance.name
       }
 
-      Puppet.info "Submitting facts to Satellite at #{foreman_url}"
+      Puppet.info "Submitting facts to Satellite at #{satellite_url}"
       submit_request '/api/hosts/facts', request_body
     rescue Exception => e
       raise Puppet::Error, "Could not send facts to Satellite: #{e}\n#{e.backtrace}"
