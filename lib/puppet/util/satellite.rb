@@ -16,18 +16,20 @@ module Puppet::Util::Satellite
 
   def create_http
     @uri = URI.parse(satellite_url)
-    http = Net::HTTP.new(uri.host, uri.port)
-    http.use_ssl     = uri.scheme == 'https'
+    http = Net::HTTP.new(@uri.host, @uri.port)
+    http.use_ssl     = @uri.scheme == 'https'
     if http.use_ssl?
-      if SETTINGS['ssl_ca'] && !SETTINGS['ssl_ca'].empty?
-        http.ca_file = SETTINGS['ssl_ca']
+      if settings['ssl_ca'] && !settings['ssl_ca'].empty?
+        Puppet.info "Verifying #{satellite_url} SSL identity"
+        http.ca_file = settings['ssl_ca']
         http.verify_mode = OpenSSL::SSL::VERIFY_PEER
       else
+        Puppet.info "Skipping verification of #{satellite_url} SSL identity"
         http.verify_mode = OpenSSL::SSL::VERIFY_NONE
       end
-      if SETTINGS['ssl_cert'] && !SETTINGS['ssl_cert'].empty? && SETTINGS['ssl_key'] && !SETTINGS['ssl_key'].empty?
-        http.cert = OpenSSL::X509::Certificate.new(File.read(SETTINGS['ssl_cert']))
-        http.key  = OpenSSL::PKey::RSA.new(File.read(SETTINGS['ssl_key']), nil)
+      if settings['ssl_cert'] && !settings['ssl_cert'].empty? && settings['ssl_key'] && !settings['ssl_key'].empty?
+        http.cert = OpenSSL::X509::Certificate.new(File.read(settings['ssl_cert']))
+        http.key  = OpenSSL::PKey::RSA.new(File.read(settings['ssl_key']), nil)
       end
     end
     http
@@ -159,6 +161,6 @@ module Puppet::Util::Satellite
 
 
   def satellite_url
-    SETTINGS['url'] || raise(Puppet::Error, "Must provide URL in #{$settings_file}")
+    settings['url'] || raise(Puppet::Error, "Must provide url parameter to satellite class")
   end
 end

@@ -5,6 +5,8 @@ class Puppet::Node::Facts::Satellite < Puppet::Node::Facts::Puppetdb
   desc "Save facts to Satellite's Foreman component and PuppetDB.
        It uses PuppetDB to retrieve facts for catalog compilation."
 
+  include Puppet::Util::Satellite
+
   def save(request)
     begin
       request_body = {'certname' => request.key, 
