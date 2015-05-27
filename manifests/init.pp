@@ -25,7 +25,7 @@
 #    satellite_url => 'https://satellite.example.domain',
 #    ssl_ca        => '/etc/puppetlabs/puppet/ssl/ca/katello-default-ca.crt',
 #    ssl_cert      => '/etc/puppetlabs/puppet/ssl/certs/satellite-master.example.domain.pem',
-#    ssl_key       => '/etc/puppetlabs/puppet/ssl/public_keys/satellite-master.example.domain.pem',
+#    ssl_key       => '/etc/puppetlabs/puppet/ssl/private_keys/master.domain.com.pem',
 #  }
 #
 # === Authors
