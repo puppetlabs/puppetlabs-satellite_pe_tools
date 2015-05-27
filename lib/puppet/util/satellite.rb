@@ -20,14 +20,20 @@ module Puppet::Util::Satellite
     http.use_ssl     = @uri.scheme == 'https'
     if http.use_ssl?
       if settings['ssl_ca'] && !settings['ssl_ca'].empty?
-        Puppet.info "Verifying #{satellite_url} SSL identity"
+        Puppet.info "Will verify #{satellite_url} SSL identity"
+
         http.ca_file = settings['ssl_ca']
+        raise Puppet::Error, "CA file #{settings['ssl_ca']} does not exist" unless File.exists? settings['ssl_ca']
+
         http.verify_mode = OpenSSL::SSL::VERIFY_PEER
       else
-        Puppet.info "Skipping verification of #{satellite_url} SSL identity"
+        Puppet.info "Will NOT verify #{satellite_url} SSL identity"
         http.verify_mode = OpenSSL::SSL::VERIFY_NONE
       end
       if settings['ssl_cert'] && !settings['ssl_cert'].empty? && settings['ssl_key'] && !settings['ssl_key'].empty?
+        raise Puppet::Error, "Certificate file #{settings['ssl_cert']} does not exist" unless File.exists? settings['ssl_cert']
+        raise Puppet::Error, "Key file #{settings['ssl_key']} does not exist" unless File.exists? settings['ssl_key']
+
         http.cert = OpenSSL::X509::Certificate.new(File.read(settings['ssl_cert']))
         http.key  = OpenSSL::PKey::RSA.new(File.read(settings['ssl_key']), nil)
       end
