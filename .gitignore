@@ -21,3 +21,4 @@ junit
 .files
 .pe_build
 Gemfile.lock
+log
