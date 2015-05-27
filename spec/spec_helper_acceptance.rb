@@ -26,18 +26,18 @@ def install_pe_on(role)
   end
 end
 
-def prepare_satellite_on(role)
+def install_satellite_on(role)
   target_hosts = find_hosts_with_role role
   target_hosts.each do |host|
     fqdn = fact_on host, 'fqdn'
+
     on host, "grep #{fqdn} /etc/hosts || sed -i 's/satellite/#{fqdn} satellite/' /etc/hosts"
+    run_script_on host, project_root + '/config/scripts/install_satellite.sh'
   end
 end
 
-install_pe_on 'master'
-
-prepare_satellite_on 'satellite'
-run_script_on 'satellite', project_root + '/config/scripts/install_satellite.sh'
+install_pe_on        'master'
+install_satellite_on 'satellite'
 
 RSpec.configure do |c|
   # Readable test descriptions
