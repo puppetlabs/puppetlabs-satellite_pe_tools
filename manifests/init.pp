@@ -52,29 +52,15 @@ class pe_satellite(
     } else {
       $ssl_ca_real = "/etc/puppetlabs/puppet/ssl/ca/katello-default-ca.crt"
     }
-
-    if $ssl_cert {
-      $ssl_cert_real = $ssl_cert
-    } else {
-      $ssl_cert_real = "/etc/puppetlabs/puppet/ssl/certs/${satellite_hostname}.pem"
-    }
-
-    if $ssl_key {
-      $ssl_key_real = $ssl_key
-    } else {
-      $ssl_key_real = "/etc/puppetlabs/puppet/ssl/private_keys/${::fqdn}.pem"
-    }
   } else {
     $ssl_ca_real = false
-    $ssl_key_real = false
-    $ssl_cert_real = false
   }
 
   $satellite_config = {
     url      => $satellite_url,
     ssl_ca   => $ssl_ca_real,
-    ssl_cert => $ssl_cert_real,
-    ssl_key  => $ssl_key_real
+    ssl_cert => $ssl_cert,
+    ssl_key  => $ssl_key
   }
 
   file { '/etc/puppetlabs/puppet/pe_satellite.yaml':
