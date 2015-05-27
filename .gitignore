@@ -22,3 +22,4 @@ junit
 .pe_build
 Gemfile.lock
 log
+katello-default-ca.crt
