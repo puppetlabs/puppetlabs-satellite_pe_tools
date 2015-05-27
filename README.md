@@ -78,7 +78,7 @@ CA certificate.
 ## Disabling PE Master verification
 
 In the Satellite UI, go to *Administer -> Settings -> Auth* and set the
-*require_ssl_puppetmasters* parameter to false.
+*restrict_registered_puppetmasters* parameter to false.
 
 ## Generating a certificate for each PE master
 
