@@ -10,14 +10,14 @@ class Puppet::Node::Facts::Satellite < Puppet::Node::Facts::Puppetdb
   def save(request)
     begin
       request_body = {'certname' => request.key, 
-                          'facts' => request.instance.values, 
-                          'name' => request.instance.name
+                      'facts' => request.instance.values, 
+                      'name' => request.instance.name
       }
 
       Puppet.info "Submitting facts to Satellite at #{satellite_url}"
       submit_request '/api/hosts/facts', request_body
     rescue Exception => e
-      raise Puppet::Error, "Could not send facts to Satellite: #{e}\n#{e.backtrace}"
+      Puppet.err "Could not send facts to Satellite: #{e}\n#{e.backtrace}"
     end
 
     super(request)

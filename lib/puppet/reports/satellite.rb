@@ -16,7 +16,7 @@ Puppet::Reports.register_report(:satellite) do
       Puppet.info "Submitting report to #{satellite_url}"
       submit_request '/api/reports', body
     rescue Exception => e
-      raise Puppet::Error, "Could not send report to Satellite: #{e}\n#{e.backtrace}"
+      Puppet.err "Could not send report to Satellite: #{e}\n#{e.backtrace}"
     end
   end
 end
