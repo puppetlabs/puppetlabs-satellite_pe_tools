@@ -26,6 +26,15 @@ The following parameters are available:
 | ssl_cert | The file path to the PE Master's certificate signed with the Satellite server's CA certificate | /etc/puppetlabs/puppet/ssl/certs/$(satellite_fqdn).pem | no |
 | ssl_key | The file path to the PE Master's private key used to generate the PE Master's  | /etc/puppetlabs/puppet/ssl/certs/$(pe_master_fqdn).pem | no |
 
+## Set PE Master Facts Terminus
+
+**Note: This setting is only available in PE 3.8.1+. See ticket [#PE-9933](https://tickets.puppetlabs.com/browse/PE-9933)**
+
+In the 'PE Master' nodegroup in the PE Console, add the *facts_terminus*
+parameter to the *puppet_enterprise* class with a String value of *satellite*.
+When puppet runs on the PE masters, it will be set to forward the facts to
+Satellite.
+
 # Allow Puppet Enterprise Master to Send Data to Satellite
 
 By default, the Satellite server only allows Satellite capsules and Smart
