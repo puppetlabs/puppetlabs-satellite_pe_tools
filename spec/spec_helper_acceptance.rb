@@ -29,7 +29,7 @@ end
 def install_satellite_on(role)
   target_hosts = find_hosts_with_role role
   target_hosts.each do |host|
-    on host, "hostname --fqdn"
+    fqdn = on(host, "hostname --fqdn").stdout.strip
 
     on host, "grep #{fqdn} /etc/hosts || sed -i 's/satellite/#{fqdn} satellite/' /etc/hosts"
     run_script_on host, project_root + '/config/scripts/install_satellite.sh'
