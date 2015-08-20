@@ -68,7 +68,7 @@ class pe_satellite(
     content => to_yaml($satellite_config),
     owner   => pe-puppet,
     group   => pe-puppet,
-    mode    => 0644,
+    mode    => '0644',
   }
 
 }
