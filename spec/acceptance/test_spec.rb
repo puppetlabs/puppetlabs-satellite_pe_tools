@@ -1,8 +1,18 @@
 require 'spec_helper_acceptance'
 
-describe 'pe_satellite report tests' do
+# The following block is required due to differences in networking
+# setup as well as functionality in beaker between vagrant and vmpooler
+if default['hypervisor'] =~ /vagrant/
+  satellite_host = hosts_as('satellite').first["ip"]
+  master_host = "master"
+else
+  satellite_host = hosts_as('satellite').first.hostname
+  master_host = hosts_as('master').first.hostname
+end
+
+describe 'pe_satellite tests' do
   before(:all) do
-    satellite_update_setting("#{hosts_as('satellite').first["ip"]}", "restrict_registered_puppetmasters", false)
+    satellite_update_setting(satellite_host, "restrict_registered_puppetmasters", false)
     
     pp = <<-EOS
         ini_setting { "satelliteconf1":
@@ -23,26 +33,48 @@ describe 'pe_satellite report tests' do
         EOS
 
     apply_manifest(pp, :catch_failures => true)
+
+    run_script_on "master", project_root + '/config/scripts/facts_terminus_config.sh'
+    on "master", "service pe-puppetserver restart"
+    on "master", "puppet agent -t", {:acceptable_exit_codes => [0,2]}
   end
 
+  context 'report tests' do
+    it 'applies' do
+      pp = <<-EOS
+        class {'pe_satellite':
+          satellite_url => "https://#{satellite_host}",
+          verify_satellite_certificate => false,
+        }
 
+        notify {'This is a test from Puppet to Satellite':
+          require => Class['pe_satellite']
+        }
+      EOS
 
-  it 'applies' do
-    pp = <<-EOS
-   	 class {'pe_satellite':
-       satellite_url => "https://#{hosts_as('satellite').first["ip"]}",
-       verify_satellite_certificate => false,
-     }
+      apply_manifest(pp, :catch_failures => true)
+    end
 
-     notify {'This is a test from Puppet to Satellite':
-       require => Class['pe_satellite']
-     }
-   	 EOS
+    it 'should contain the report text in Satellite' do
+      expect(satellite_get_last_report(satellite_host, master_host)).to match(/This is a test from Puppet to Satellite/)
+    end
+  end
 
-   	 apply_manifest(pp, :catch_failures => true)
-   end
+  context 'facts tests' do
+    it 'applies' do
+      pp = <<-EOS
+        class {'pe_satellite':
+          satellite_url => "https://#{satellite_host}",
+          verify_satellite_certificate => false,
+        }
+        EOS
 
-   it 'should contain the text in Satellite' do
-     expect(satellite_get_last_report("#{hosts_as('satellite').first["ip"]}")).to match(/This is a test from Puppet to Satellite/)
-   end
+      apply_manifest(pp, :catch_failures => true)
+      on "master", "puppet agent -t", {:acceptable_exit_codes => [0,2]}
+    end
+
+    it 'should contain the fact text in Satellite' do
+      expect(satellite_get_facts(satellite_host, master_host)).to match(/#{hosts_as('master').first.ip}/)
+    end
+  end
 end

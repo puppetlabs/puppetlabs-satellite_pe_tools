@@ -9,23 +9,6 @@ def find_hosts_with_role(role)
   hosts.select { |h| h[:roles].include?(role) }
 end
 
-#def install_pe_on(role)
-#  target_hosts = find_hosts_with_role role
-#
-#  target_hosts.each do |host|
-#    #process the version files if necessary
-#    host['pe_dir'] ||= options[:pe_dir]
-#    host['pe_ver'] = host['pe_ver'] || options['pe_ver'] ||
-#     Beaker::Options::PEVersionScraper.load_pe_version(host[:pe_dir] || options[:pe_dir], options[:pe_version_file])
-#
-#    pe_installed = (on host, '[ -d /etc/puppetlabs ]').exit_code == 0
-#    unless pe_installed
-#      #send in the global options hash
-#      do_install host, options
-#    end
-#  end
-#end
-
 def install_satellite_on(role)
   target_hosts = find_hosts_with_role role
   target_hosts.each do |host|
@@ -37,7 +20,7 @@ def install_satellite_on(role)
 end
 
 unless ENV['RS_PROVISION'] == 'no' or ENV['BEAKER_provision'] == 'no'
-  install_pe
+  install_pe_on(find_hosts_with_role('master'), options)
   install_satellite_on 'satellite'
   on "master", puppet('module install puppetlabs-inifile'), { :acceptable_exit_codes => [0,1] }
 end
@@ -106,6 +89,10 @@ def satellite_update_setting(ip, setting, value)
   )
 end
 
-def satellite_get_last_report(ip)
-  satellite_get(ip, "hosts/master/reports/last")['logs'].join("\n")
+def satellite_get_last_report(satellite_host, test_host)
+  satellite_get(satellite_host, "hosts/#{test_host}/reports/last")['logs'].join("\n")
+end
+
+def satellite_get_facts(satellite_host, test_host)
+  satellite_get(satellite_host, "hosts/#{test_host}/facts").to_s
 end

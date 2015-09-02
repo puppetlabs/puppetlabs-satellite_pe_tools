@@ -19,3 +19,4 @@ HOSTS:
 CONFIG:
   log_level: debug
   type: pe
+  vagrant_memsize: 4096
