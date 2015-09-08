@@ -8,7 +8,7 @@ HOSTS:
     platform: el-7-x86_64
     box : puppetlabs/centos-7.0-64-nocm
     hypervisor : vagrant_virtualbox
-    pe_dir: http://neptune.puppetlabs.lan/3.8/ci-ready
+    pe_dir: http://neptune.puppetlabs.lan/2015.2/ci-ready
   satellite:
     roles:
       - satellite
@@ -19,3 +19,4 @@ HOSTS:
 CONFIG:
   log_level: debug
   type: pe
+  vagrant_memsize: 4096
