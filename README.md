@@ -27,13 +27,13 @@ This module requires Puppet Enterprise 3.8.1 or later.
 
 ### Beginning with pe_satellite
 
-To set up pe_satellite to communicate with your Satellite servers, you need to:
-
 1. [Classify Puppet Enterprise masters](#classify-puppet-enterprise-masters)
-2. [Allow Puppet Enterprise master to send data to satellite](#allow-puppet-enterprise–master-to-send-data-to-satellite)
-3. [Verify Satellite server identity](#verify-satellite-server-identity)
+2. [Set PE master facts terminus](#set-pe-master-facts-terminus)
+3. [Allow Puppet Enterprise master to send data to satellite](#allow-pe–master-to-send-data-to-satellite)
+4. [Verify Satellite server identity](#verify-satellite-server-identity)
+5. [Enable pluginsync and reports in Puppet](#enable-pluginsync-and-reports-in-puppet)
 
-Continue reading for details about each of these steps:
+To set up the pe_satellite module to communicate with Satellite servers:
 
 1. Classify Puppet Enterprise masters
 
@@ -45,14 +45,13 @@ Continue reading for details about each of these steps:
 parameter to the `puppet_enterprise` class with a string value of 'satellite'.
 This sets Puppet runs on PE masters to forward the facts to Satellite.
 
-3. Allow Puppet Enterprise master to send data to Satellite
+3. Allow PE master to send data to Satellite
 
   By default, the Satellite server only allows Satellite capsules and Smart
 Proxies to send facts and reports to the Satellite server. To allow each PE master to send facts and reports as well: 
     
     1. In Satellite, go to **Administer -> Settings -> Auth**
-    2. Add the hostname of each PE master to the `trusted_puppetmaster_hosts`
-parameter value's array.
+    2. Add the hostname of each PE master to the `trusted_puppetmaster_hosts` parameter value's array.
 
 4. Verify Satellite Server Identity
 
@@ -60,8 +59,23 @@ parameter value's array.
 Certificate Authority (CA) certificate that signed the Satellite server's SSL
 certificate must be available on the Puppet Enterprise master.
 
-  Note that if you do not wish to verify the identity of the Satellite server, you can set the
-[`verify_satellite_certificate`](#verify_satellite_certificate) parameter for the `pe_satellite` class to false.
+  Note that if you do not wish to verify the identity of the Satellite server, you can set the[`verify_satellite_certificate`](#verify_satellite_certificate) parameter for the `pe_satellite` class to false.
+  
+  See [About Satellite Certificates](#about-satellite-certificates) for more about these options.
+  
+5. Enable pluginsync and reports in Puppet
+
+  On each Puppet agent, make sure the [`pluginsync`](https://docs.puppetlabs.com/references/latest/configuration.html#pluginsync) and [`report`](https://docs.puppetlabs.com/references/latest/configuration.html#report) settings are enabled. (These settings are normally enabled by default.)
+
+        [agent]
+        report = true
+        pluginsync = true
+
+  On the Puppet master, make sure the [`reports`](https://docs.puppetlabs.com/references/4.2.latest/configuration.html#reports) setting in the master section includes pe_satellite:
+
+        [master]
+        reports = pe_satellite
+
 
 ## About Satellite Certificates
 
@@ -100,8 +114,9 @@ You can either:
 In the Satellite UI, go to *Administer -> Settings -> Auth* and set the
 *restrict_registered_puppetmasters* parameter to false.
 
-## Usage
 
+## Usage
+        
 *TODO: What does this example do?**
 
 ~~~puppet
@@ -122,7 +137,7 @@ processor and facts indirector to know how to communicate with Satellite.
 
 All parameters are **required** unless otherwise specified.
 
-* `satellite_url` - The full URL to the satellite server in format https://url.to.satellite.
+* `satellite_url` - The full URL to the satellite server in format `https://url.to.satellite`.
 
 * `ssl_ca` - **Optional**. The file path to the CA certificate used to verify the satellite server identitity. If not provided, the local Puppet Enterprise master's CA is used. Default: `/etc/puppetlabs/puppet/ssl/ca/katello-default-ca.crt`.
 
