@@ -10,7 +10,7 @@ else
   master_host = hosts_as('master').first.hostname
 end
 
-describe 'pe_satellite tests' do
+describe 'satellite_pe_tools tests' do
   before(:all) do
     satellite_update_setting(satellite_host, "restrict_registered_puppetmasters", false)
     
@@ -42,13 +42,13 @@ describe 'pe_satellite tests' do
   context 'report tests' do
     it 'applies' do
       pp = <<-EOS
-        class {'pe_satellite':
+        class {'satellite_pe_tools':
           satellite_url => "https://#{satellite_host}",
           verify_satellite_certificate => false,
         }
 
         notify {'This is a test from Puppet to Satellite':
-          require => Class['pe_satellite']
+          require => Class['satellite_pe_tools']
         }
       EOS
 
@@ -63,7 +63,7 @@ describe 'pe_satellite tests' do
   context 'facts tests' do
     it 'applies' do
       pp = <<-EOS
-        class {'pe_satellite':
+        class {'satellite_pe_tools':
           satellite_url => "https://#{satellite_host}",
           verify_satellite_certificate => false,
         }

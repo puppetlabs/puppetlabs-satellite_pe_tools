@@ -1,4 +1,4 @@
-# == Class: pe_satellite
+# == Class: satellite_pe_tools
 #
 # This module provides and configures a report processor to send puppet agent reports
 # to a Satellite server
@@ -21,7 +21,7 @@
 #
 # === Examples
 #
-#  class { 'pe_satellite':
+#  class { 'satellite_pe_tools':
 #    satellite_url => 'https://satellite.example.domain',
 #    ssl_ca        => '/etc/puppetlabs/puppet/ssl/ca/katello-default-ca.crt',
 #    ssl_cert      => '/etc/puppetlabs/puppet/ssl/certs/satellite-master.example.domain.pem',
@@ -35,7 +35,7 @@
 # === Copyright
 #
 # Copyright 2015 Puppet Labs
-class pe_satellite(
+class satellite_pe_tools(
   $satellite_url,
   $verify_satellite_certificate = true,
   $ssl_ca = '',
@@ -63,7 +63,7 @@ class pe_satellite(
     ssl_key  => $ssl_key
   }
 
-  file { '/etc/puppetlabs/puppet/pe_satellite.yaml':
+  file { '/etc/puppetlabs/puppet/satellite_pe_tools.yaml':
     ensure  => file,
     content => to_yaml($satellite_config),
     owner   => pe-puppet,

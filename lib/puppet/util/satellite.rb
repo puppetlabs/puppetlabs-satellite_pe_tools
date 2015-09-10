@@ -9,7 +9,7 @@ require 'json'
 module Puppet::Util::Satellite
   def settings
     return @settings if @settings
-    $settings_file = "/etc/puppetlabs/puppet/pe_satellite.yaml"
+    $settings_file = "/etc/puppetlabs/puppet/satellite_pe_tools.yaml"
 
     @settings = YAML.load_file($settings_file)
   end
