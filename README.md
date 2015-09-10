@@ -1,11 +1,11 @@
-# pe_satellite
+# satellite_pe_tools
 
 #### Table of Contents
 
 1. [Description](#description)
-2. [Setup - The basics of getting started with pe_satellite](#setup)
+2. [Setup - The basics of getting started with satellite_pe_tools](#setup)
     * [Setup requirements](#setup-requirements)
-    * [Beginning with pe_satellite](#beginning-with-pe_satellite)
+    * [Beginning with satellite_pe_tools](#beginning-with-satellite_pe_tools)
 3. [Usage - Configuration options and additional functionality](#usage)
 4. [Reference - An under-the-hood peek at what the module is doing and how](#reference)
 5. [Limitations - OS compatibility, etc.](#limitations)
@@ -13,7 +13,7 @@
 
 ## Description
 
-The pe_satellite module configures Puppet's report processor and facts indirector to allow you to send Puppet reports and facts to your Red Hat Satellite server.
+The satellite_pe_tools module configures Puppet's report processor and facts indirector to allow you to send Puppet reports and facts to your Red Hat Satellite server.
 
 ## Setup
 
@@ -21,7 +21,7 @@ The pe_satellite module configures Puppet's report processor and facts indirecto
 
 This module requires Puppet Enterprise 3.8.1 or later.
 
-### Beginning with pe_satellite
+### Beginning with satellite_pe_tools
 
 1. [Classify Puppet Enterprise masters](#classify-puppet-enterprise-masters)
 2. [Set PE master facts terminus](#set-pe-master-facts-terminus)
@@ -36,7 +36,7 @@ To set up communication between Satellite and your PE masters, follow these step
 
 1. Classify Puppet Enterprise masters
 
-   Add the `pe_satellite` class to the PE Master node group in the Puppet Enterprise Console. For details on adding classes to node groups, see the [Puppet Enterprise documentation](#https://docs.puppetlabs.com/pe/latest/console_classes_groups.html#adding-classes-to-a-node-group).
+   Add the `satellite_pe_tools` class to the PE Master node group in the Puppet Enterprise Console. For details on adding classes to node groups, see the [Puppet Enterprise documentation](#https://docs.puppetlabs.com/pe/latest/console_classes_groups.html#adding-classes-to-a-node-group).
 
 2. Set PE Master facts terminus
 
@@ -58,11 +58,11 @@ Proxies to send facts and reports to the Satellite server. To allow each PE mast
 Certificate Authority (CA) certificate that signed the Satellite server's SSL
 certificate must be available on the Puppet Enterprise master.
 
-  By default, the CA certificate is located on the Satellite CA server. Copy the file `/etc/pki/katello/certs/katello-default-ca.crt` from the Satellite CA server to `/etc/puppetlabs/puppet/ssl/ca/katello-default-ca.crt` on each PE master. Note that if you place the certificate in a different location or give it a different name, you must set the `ssl_ca` parameter for the `pe_satellite` class to the file path of the CA certificate.
+  By default, the CA certificate is located on the Satellite CA server. Copy the file `/etc/pki/katello/certs/katello-default-ca.crt` from the Satellite CA server to `/etc/puppetlabs/puppet/ssl/ca/katello-default-ca.crt` on each PE master. Note that if you place the certificate in a different location or give it a different name, you must set the `ssl_ca` parameter for the `satellite_pe_tools` class to the file path of the CA certificate.
 
-  Alternatively, if the Satellite SSL certificate is signed by a remote CA, the remote's CA certificate needs to be in `/etc/puppetlabs/puppet/ssl/ca/ca-certificate.crt`. In this case, set the `ssl_ca` parameter for the `pe_satellite` class to the file path of the CA certificate.
+  Alternatively, if the Satellite SSL certificate is signed by a remote CA, the remote's CA certificate needs to be in `/etc/puppetlabs/puppet/ssl/ca/ca-certificate.crt`. In this case, set the `ssl_ca` parameter for the `satellite_pe_tools` class to the file path of the CA certificate.
 
-  If you do not wish to verify the identity of the Satellite server, you can set the[`verify_satellite_certificate`](#verify_satellite_certificate) parameter for the `pe_satellite` class to false.
+  If you do not wish to verify the identity of the Satellite server, you can set the[`verify_satellite_certificate`](#verify_satellite_certificate) parameter for the `satellite_pe_tools` class to false.
   
 5. Disable PE master identity verification
 
@@ -81,15 +81,15 @@ Enterprise masters connecting to it. If the PE report processor and facts indire
         report = true
         pluginsync = true
 
-  On the Puppet master, make sure the [`reports`](https://docs.puppetlabs.com/references/4.2.latest/configuration.html#reports) setting in the master section includes pe_satellite:
+  On the Puppet master, make sure the [`reports`](https://docs.puppetlabs.com/references/4.2.latest/configuration.html#reports) setting in the master section includes satellite_pe_tools:
 
         [master]
-        reports = pe_satellite
+        reports = satellite_pe_tools
 
 ## Usage
         
 ~~~puppet
-class {'pe_satellite':
+class {'satellite_pe_tools':
 	satellite_url => "https://satellite.example.com",
     verify_satellite_certificate => true,
 }
@@ -100,9 +100,9 @@ This example tells the PE master the location of the Satellite server (`https://
 
 ## Reference
 
-### Class: pe_satellite
+### Class: satellite_pe_tools
 
-The only class of the module, `pe_satellite` configures Puppet's report
+The only class of the module, `satellite_pe_tools` configures Puppet's report
 processor and facts indirector to communicate with Satellite.
 
 #### Parameters
@@ -121,7 +121,7 @@ All parameters are **required** unless otherwise specified.
 
 ## Limitations
 
-The pe_satellite module requires Red Hat Satellite 6 and Puppet Enterprise 3.8.1 or later. This module is supported on: 
+The satellite_pe_tools module requires Red Hat Satellite 6 and Puppet Enterprise 3.8.1 or later. This module is supported on:
 
 * Red Hat 7
 * CentOS 7

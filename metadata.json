@@ -1,11 +1,11 @@
 {
-  "name": "puppetlabs/pe_satellite",
+  "name": "puppetlabs/satellite_pe_tools",
   "version": "0.1.0",
   "author": "puppetlabs",
-  "summary": "Configures reports and Inventory data to be sent to Satellite 6",
-  "license": "Software License Agreement",
-  "source": "https://github.com/puppetlabs/puppetlabs-pe_satellite",
-  "project_page": "https://github.com/puppetlabs/puppetlabs-pe_satellite",
+  "summary": "Configures reports and inventory data to be sent to Satellite 6",
+  "license": "PuppetLabs-Enterprise",
+  "source": "https://github.com/puppetlabs/puppetlabs-satellite_pe_tools",
+  "project_page": "https://github.com/puppetlabs/puppetlabs-satellite_pe_tools",
   "issues_url": "https://tickets.puppetlabs.com/browse/MODULES",
   "dependencies": [
     {"name":"puppetlabs-stdlib","version_requirement":">= 1.0.0"}

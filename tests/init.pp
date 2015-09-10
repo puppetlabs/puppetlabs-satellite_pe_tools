@@ -9,6 +9,6 @@
 # Learn more about module testing here:
 # http://docs.puppetlabs.com/guides/tests_smoke.html
 #
-class { 'pe_satellite':
+class { 'satellite_pe_tools':
   satellite_url => 'https://satellite.local',
 }
