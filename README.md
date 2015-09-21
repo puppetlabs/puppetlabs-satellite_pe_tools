@@ -84,7 +84,7 @@ Enterprise masters connecting to it. If the PE report processor and facts indire
   On the Puppet master, make sure the [`reports`](https://docs.puppetlabs.com/references/4.2.latest/configuration.html#reports) setting in the master section includes satellite_pe_tools:
 
         [master]
-        reports = satellite_pe_tools
+        reports = satellite
 
 ## Usage
         
