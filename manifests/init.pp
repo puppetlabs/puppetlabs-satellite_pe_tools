@@ -47,7 +47,7 @@ class satellite_pe_tools(
   $satellite_hostname = $parsed_hash['hostname']
 
   if $verify_satellite_certificate {
-    if $ssl_ca {
+    if $ssl_ca != '' {
       $ssl_ca_real = $ssl_ca
     } else {
       $ssl_ca_real = "/etc/puppetlabs/puppet/ssl/ca/katello-default-ca.crt"
