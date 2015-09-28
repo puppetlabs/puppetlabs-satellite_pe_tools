@@ -41,7 +41,7 @@ To set up communication between Satellite and your PE masters, follow these step
 2. Set PE Master facts terminus
 
   In the PE Master node group in the PE Console, add the `facts_terminus`
-parameter to the `puppet_enterprise` class with a string value of 'satellite'.
+parameter to the `puppet_enterprise::profile::master` class with a string value of 'satellite'.
 This sets Puppet runs on PE masters to forward the facts to Satellite.
 
 3. Allow PE master to send data to Satellite
@@ -81,10 +81,11 @@ Enterprise masters connecting to it. If the PE report processor and facts indire
         report = true
         pluginsync = true
 
-  On the Puppet master, make sure the [`reports`](https://docs.puppetlabs.com/references/4.2.latest/configuration.html#reports) setting in the master section includes satellite_pe_tools:
+  On the Puppet master, make sure the [`reports`](https://docs.puppetlabs.com/references/4.2.latest/configuration.html#reports) setting in the master section *includes* the `satellite` value:
 
         [master]
         reports = satellite
+  Note: The `reports` setting is a comma seperated list and can include other appropriate values.
 
 ## Usage
         
