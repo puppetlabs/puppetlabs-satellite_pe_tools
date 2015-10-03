@@ -52,11 +52,9 @@ Proxies to send facts and reports to the Satellite server. To allow each PE mast
     1. In Satellite, go to **Administer -> Settings -> Auth**
     2. Add the hostname of each PE master to the `trusted_puppetmaster_hosts` parameter value's array.
 
-4. Verify Satellite server identity
+4. Allow PE Master to verify Satellite server identity
 
-  To use SSL verification, which prevents man-in-the-middle attacks, the
-Certificate Authority (CA) certificate that signed the Satellite server's SSL
-certificate must be available on the Puppet Enterprise master.
+  To use SSL verification so that the Puppet master can verify the satellite server, which prevents man-in-the-middle attacks, the Certificate Authority (CA) certificate that signed the Satellite server's SSL certificate must be available on the Puppet Enterprise master.
 
   By default, the CA certificate is located on the Satellite CA server. Copy the file `/etc/pki/katello/certs/katello-default-ca.crt` from the Satellite CA server to `/etc/puppetlabs/puppet/ssl/ca/katello-default-ca.crt` on each PE master. Note that if you place the certificate in a different location or give it a different name, you must set the `ssl_ca` parameter for the `satellite_pe_tools` class to the file path of the CA certificate.
 
@@ -64,12 +62,28 @@ certificate must be available on the Puppet Enterprise master.
 
   If you do not wish to verify the identity of the Satellite server, you can set the[`verify_satellite_certificate`](#verify_satellite_certificate) parameter for the `satellite_pe_tools` class to false.
   
-5. Disable PE master identity verification
+5. Allow Satellite server to verify PE Master identity
 
   By default, Satellite is configured to verify the SSL identity of the Puppet
-Enterprise masters connecting to it. If the PE report processor and facts indirector are not using a certificate signed with the Satellite server's CA, the verification fails. 
+  Enterprise masters connecting to it. If the PE report processor and facts indirector are not using a certificate signed with the Satellite server's CA, the verification fails. 
+    
+  To use SSL verification so that the Satellite server can verify the PE Master, you must generate a SSL cert and key pair on the Satellite server, and then copy these files to your PE master.
 
-  Currently, Satellite is incapable of signing certificates. This means you must configure Satellite to *not* verify the Puppet master's identity. To do so, in the Satellite UI, go to *Administer -> Settings -> Auth* and set the `restrict_registered_puppetmasters` parameter to false.
+  Note: In the following steps, 'satellite.example.com' should be replaced by the FQDN of your PE Master.
+
+  5a. On the Satellite server, run the following command: `capsule-certs-generate --capsule-fqdn "satellite.example.com --certs-tar "~/satellite.example.com-certs.tar"`
+
+  5b. Untar the newly created file: `tar -xvf ~/satellite.example.com-certs.tar`. A new folder `~/ssl-build` will be created.
+
+  5c. Copy the following 2 files over to your PE Master: `~/ssl-build/satellite.example.com/satellite.example.com-puppet-client.crt` and `~/ssl-build/satellite.example.com/satellite.example.com-puppet-client.key`. A good place to copy them is to `/etc/puppetlabs/puppet/ssl/` (version 2015.x) or `/etc/puppet/ssl/` (version 3.x) on your PE Master.
+
+  5d. On your PE Master, set the ownership of these 2 files to `pe-puppet`.
+
+  5e. In the Satellite UI, go to *Administer -> Settings -> Auth* and set the `restrict_registered_puppetmasters` parameter to true. Additionally, add your PE Master's FQDN to the `trusted_puppetmaster_hosts` array on the same page - E.g. `[satellite.example.com]`
+
+  5f. Set the `ssl_cert` and `ssl_key` parameters in your `satellite_pe_tools` class to the location on your PE Master of the 2 files respectively.
+
+  If you do not wish for the Satellite server to verify the PE Master identity, in the Satellite UI, go to *Administer -> Settings -> Auth* and set the `restrict_registered_puppetmasters` parameter to false.
 
   Note that this setting presents a security risk, as false reports and facts can be sent to Satellite by a malicious system masquerading as a current PE master on your infrastructure that's been added to Satellite as a safe PE master.
 
