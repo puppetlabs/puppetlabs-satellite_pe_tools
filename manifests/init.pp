@@ -38,9 +38,10 @@
 class satellite_pe_tools(
   $satellite_url,
   $verify_satellite_certificate = true,
-  $ssl_ca = '',
-  $ssl_cert = '',
-  $ssl_key = ''
+  $ssl_ca                       = '',
+  $ssl_cert                     = '',
+  $ssl_key                      = '',
+  $manage_default_ca_cert       = true,
 ) {
 
   $parsed_hash = parse_url($satellite_url)
@@ -63,12 +64,27 @@ class satellite_pe_tools(
     ssl_key  => $ssl_key
   }
 
-  file { '/etc/puppetlabs/puppet/satellite_pe_tools.yaml':
+  file { 'satellite_config_yaml':
     ensure  => file,
+    path    => '/etc/puppetlabs/puppet/satellite_pe_tools.yaml',
     content => to_yaml($satellite_config),
     owner   => pe-puppet,
     group   => pe-puppet,
     mode    => '0644',
   }
 
+  if ($manage_default_ca_cert) and ($::osfamily == 'RedHat') {
+    exec {'download_install_katello_cert_rpm':
+      path    => "/usr/bin",
+      command => "curl -k ${satellite_url}/pub/katello-ca-consumer-latest.noarch.rpm > /tmp/katello-ca-consumer-latest.noarch.rpm ; rpm -i /tmp/katello-ca-consumer-latest.noarch.rpm",
+      creates => '/etc/rhsm/ca/katello-server-ca.pem'
+    }
+
+    file { '/etc/puppetlabs/puppet/ssl/ca/katello-default-ca.crt':
+      ensure  => 'link',
+      target  => '/etc/rhsm/ca/katello-server-ca.pem',
+      require => Exec['download_install_katello_cert_rpm'],
+      before  => File['satellite_config_yaml'],
+    }
+  }
 }

@@ -44,7 +44,7 @@ describe 'satellite_pe_tools tests' do
       pp = <<-EOS
         class {'satellite_pe_tools':
           satellite_url => "https://#{satellite_host}",
-          verify_satellite_certificate => false,
+          verify_satellite_certificate => true,
         }
 
         notify {'This is a test from Puppet to Satellite':
@@ -65,7 +65,7 @@ describe 'satellite_pe_tools tests' do
       pp = <<-EOS
         class {'satellite_pe_tools':
           satellite_url => "https://#{satellite_host}",
-          verify_satellite_certificate => false,
+          verify_satellite_certificate => true,
         }
         EOS
 

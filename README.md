@@ -58,9 +58,12 @@ Proxies to send facts and reports to the Satellite server. To allow each PE mast
 Certificate Authority (CA) certificate that signed the Satellite server's SSL
 certificate must be available on the Puppet Enterprise master.
 
-  By default, the CA certificate is located on the Satellite CA server. Copy the file `/etc/pki/katello/certs/katello-default-ca.crt` from the Satellite CA server to `/etc/puppetlabs/puppet/ssl/ca/katello-default-ca.crt` on each PE master. Note that if you place the certificate in a different location or give it a different name, you must set the `ssl_ca` parameter for the `satellite_pe_tools` class to the file path of the CA certificate.
+  By default, the CA certificate is located on the Satellite CA server. On Red Hat based systems,
+  this is automatically managed by the module. Note: The CA cert is transferred over an untrusted SSL connection. If you wish to transfer the cert manually, please see below. You must also set the `manage_default_ca_cert` parameter to false. 
 
-  Alternatively, if the Satellite SSL certificate is signed by a remote CA, the remote's CA certificate needs to be in `/etc/puppetlabs/puppet/ssl/ca/ca-certificate.crt`. In this case, set the `ssl_ca` parameter for the `satellite_pe_tools` class to the file path of the CA certificate.
+  On non-Red Hat systems (or if you wish to manually transfer the cert), copy the file `/etc/pki/katello/certs/katello-default-ca.crt` from the Satellite CA server to `/etc/puppetlabs/puppet/ssl/ca/katello-default-ca.crt` on each PE master. Note that if you place the certificate in a different location or give it a different name, you must set the `ssl_ca` parameter for the `satellite_pe_tools` class to the file path of the CA certificate.
+
+  Alternatively, if the Satellite SSL certificate is signed by a remote CA, copy the remote CA's certificate to each PE master and set the `ssl_ca` parameter for the `satellite_pe_tools` class to the file path of the CA certificate.
 
   If you do not wish to verify the identity of the Satellite server, you can set the[`verify_satellite_certificate`](#verify_satellite_certificate) parameter for the `satellite_pe_tools` class to false.
   
@@ -109,6 +112,8 @@ processor and facts indirector to communicate with Satellite.
 #### Parameters
 
 All parameters are **required** unless otherwise specified.
+
+* `manage_default_ca_cert` - Applicable to Red Hat based systems only. When set to true, the module will transfer the Satellite server's default CA certificate from the satellite server to the PE master. This uses an untrusted SSL connection. Defaults to true.
 
 * `satellite_url` - The full URL to the satellite server in format `https://url.to.satellite`.
 
