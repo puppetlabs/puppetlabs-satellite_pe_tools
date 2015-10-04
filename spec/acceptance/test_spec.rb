@@ -15,14 +15,6 @@ describe 'satellite_pe_tools tests' do
     satellite_update_setting(satellite_host, "restrict_registered_puppetmasters", false)
     
     pp = <<-EOS
-        ini_setting { "satelliteconf1":
-          ensure  => present,
-          path    => "${::settings::confdir}/puppet.conf",
-          section => 'master',
-          setting => 'reports',
-          value   => 'puppetdb,console,satellite',
-        }
-
         ini_setting { "satelliteconf2":
           ensure  => present,
           path    => "${::settings::confdir}/puppet.conf",
@@ -44,7 +36,7 @@ describe 'satellite_pe_tools tests' do
       pp = <<-EOS
         class {'satellite_pe_tools':
           satellite_url => "https://#{satellite_host}",
-          verify_satellite_certificate => false,
+          verify_satellite_certificate => true,
         }
 
         notify {'This is a test from Puppet to Satellite':
@@ -65,7 +57,7 @@ describe 'satellite_pe_tools tests' do
       pp = <<-EOS
         class {'satellite_pe_tools':
           satellite_url => "https://#{satellite_host}",
-          verify_satellite_certificate => false,
+          verify_satellite_certificate => true,
         }
         EOS
 
