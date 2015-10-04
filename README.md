@@ -84,12 +84,6 @@ Enterprise masters connecting to it. If the PE report processor and facts indire
         report = true
         pluginsync = true
 
-  On the Puppet master, make sure the [`reports`](https://docs.puppetlabs.com/references/4.2.latest/configuration.html#reports) setting in the master section *includes* the `satellite` value:
-
-        [master]
-        reports = satellite
-  Note: The `reports` setting is a comma seperated list and can include other appropriate values.
-
 ## Usage
         
 ~~~puppet

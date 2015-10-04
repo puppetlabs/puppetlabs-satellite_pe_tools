@@ -64,6 +64,16 @@ class satellite_pe_tools(
     ssl_key  => $ssl_key
   }
 
+  pe_ini_subsetting { 'reports_satellite' :
+    ensure               => present,
+    path                 => "${::settings::confdir}/puppet.conf",
+    section              => 'master',
+    setting              => 'reports',
+    subsetting           => 'satellite',
+    subsetting_separator => ',',
+    before               => File['satellite_config_yaml'],
+  }
+
   file { 'satellite_config_yaml':
     ensure  => file,
     path    => '/etc/puppetlabs/puppet/satellite_pe_tools.yaml',

@@ -15,14 +15,6 @@ describe 'satellite_pe_tools tests' do
     satellite_update_setting(satellite_host, "restrict_registered_puppetmasters", false)
     
     pp = <<-EOS
-        ini_setting { "satelliteconf1":
-          ensure  => present,
-          path    => "${::settings::confdir}/puppet.conf",
-          section => 'master',
-          setting => 'reports',
-          value   => 'puppetdb,console,satellite',
-        }
-
         ini_setting { "satelliteconf2":
           ensure  => present,
           path    => "${::settings::confdir}/puppet.conf",
