@@ -1,12 +1,44 @@
 {
   "name": "puppetlabs/satellite_pe_tools",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "author": "puppetlabs",
   "summary": "Configures reports and inventory data to be sent to Satellite 6",
   "license": "PuppetLabs-Enterprise",
   "source": "https://github.com/puppetlabs/puppetlabs-satellite_pe_tools",
   "project_page": "https://github.com/puppetlabs/puppetlabs-satellite_pe_tools",
   "issues_url": "https://tickets.puppetlabs.com/browse/MODULES",
+  "operatingsystem_support": [
+    {
+      "operatingsystem": "RHEL",
+      "operatingsystemrelease": [
+        "7"
+      ]
+    },
+    {
+      "operatingsystem": "CentOS",
+      "operatingsystemrelease": [
+        "7"
+      ]
+    },
+    {
+      "operatingsystem": "OracleLinux",
+      "operatingsystemrelease": [
+        "7"
+      ]
+    },
+    {
+      "operatingsystem": "Scientific",
+      "operatingsystemrelease": [
+        "7"
+      ]
+    }
+  ],
+  "requirements": [
+    {
+      "name": "pe",
+      "version_requirement": ">= 3.8.0 < 2015.3.0"
+    }
+  ],
   "dependencies": [
     {"name":"puppetlabs-stdlib","version_requirement":">= 1.0.0"}
   ]
