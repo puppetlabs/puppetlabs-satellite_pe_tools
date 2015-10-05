@@ -1,3 +1,5 @@
 fixtures:
+  repositories:
+    "pe_inifile": "https://github.com/puppetlabs/puppetlabs-pe_inifile"
   symlinks:
     "satellite_pe_tools": "#{source_dir}"
