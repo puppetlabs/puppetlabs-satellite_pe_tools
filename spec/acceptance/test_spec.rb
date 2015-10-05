@@ -26,7 +26,12 @@ describe 'satellite_pe_tools tests' do
 
     apply_manifest(pp, :catch_failures => true)
 
-    run_script_on "master", project_root + '/config/scripts/facts_terminus_config.sh'
+    if master['pe_dir'] =~ /3\.8/
+      run_script_on "master", project_root + '/config/scripts/facts_terminus_config-3.sh'
+    else
+      run_script_on "master", project_root + '/config/scripts/facts_terminus_config.sh'
+    end
+
     on "master", "service pe-puppetserver restart"
     on "master", "puppet agent -t", {:acceptable_exit_codes => [0,2]}
   end
