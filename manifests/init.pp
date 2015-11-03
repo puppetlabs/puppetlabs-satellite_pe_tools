@@ -51,7 +51,7 @@ class satellite_pe_tools(
     if $ssl_ca != '' {
       $ssl_ca_real = $ssl_ca
     } else {
-      $ssl_ca_real = "/etc/puppetlabs/puppet/ssl/ca/katello-default-ca.crt"
+      $ssl_ca_real = '/etc/puppetlabs/puppet/ssl/ca/katello-default-ca.crt'
     }
   } else {
     $ssl_ca_real = false
@@ -85,7 +85,7 @@ class satellite_pe_tools(
 
   if ($manage_default_ca_cert) and ($::osfamily == 'RedHat') {
     exec {'download_install_katello_cert_rpm':
-      path    => "/usr/bin",
+      path    => '/usr/bin',
       command => "curl -k ${satellite_url}/pub/katello-ca-consumer-latest.noarch.rpm > /tmp/katello-ca-consumer-latest.noarch.rpm ; rpm -i /tmp/katello-ca-consumer-latest.noarch.rpm",
       creates => '/etc/rhsm/ca/katello-server-ca.pem'
     }
