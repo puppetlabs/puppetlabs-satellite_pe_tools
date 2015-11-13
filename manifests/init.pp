@@ -71,6 +71,7 @@ class satellite_pe_tools(
     setting              => 'reports',
     subsetting           => 'satellite',
     subsetting_separator => ',',
+    notify               => Service['pe-puppetserver'],
     before               => File['satellite_config_yaml'],
   }
 
@@ -81,6 +82,7 @@ class satellite_pe_tools(
     owner   => pe-puppet,
     group   => pe-puppet,
     mode    => '0644',
+    notify  => Service['pe-puppetserver'],
   }
 
   if ($manage_default_ca_cert) and ($::osfamily == 'RedHat') {
