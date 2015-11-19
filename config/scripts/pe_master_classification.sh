@@ -1,9 +1,15 @@
 #!/bin/bash
 
-declare -x PE_CERT=$(/opt/puppet/bin/puppet agent --configprint hostcert)
-declare -x PE_KEY=$(/opt/puppet/bin/puppet agent --configprint hostprivkey)
-declare -x PE_CA=$(/opt/puppet/bin/puppet agent --configprint localcacert)
-declare -x PE_CERTNAME=$(/opt/puppet/bin/puppet agent --configprint certname)
+if [[ -d /opt/puppet ]]; then
+  PUPPET_BINARY_PATH='/opt/puppet/bin/puppet'
+else
+  PUPPET_BINARY_PATH='/opt/puppetlabs/bin/puppet'
+fi
+
+declare -x PE_CERT=$($PUPPET_BINARY_PATH agent --configprint hostcert)
+declare -x PE_KEY=$($PUPPET_BINARY_PATH agent --configprint hostprivkey)
+declare -x PE_CA=$($PUPPET_BINARY_PATH agent --configprint localcacert)
+declare -x PE_CERTNAME=$($PUPPET_BINARY_PATH agent --configprint certname)
 
 declare -x NC_CURL_OPT="-s --cacert $PE_CA --cert $PE_CERT --key $PE_KEY --insecure"
 
@@ -22,7 +28,11 @@ read -r -d '' PE_MASTER_POST << MASTER_JSON
     "pe_repo::platform::ubuntu_1404_amd64": {},
     "puppet_enterprise::profile::master": { "facts_terminus": "satellite" },
     "puppet_enterprise::profile::master::mcollective": {},
-    "puppet_enterprise::profile::mcollective::peadmin": {}
+    "puppet_enterprise::profile::mcollective::peadmin": {},
+    "satellite_pe_tools": {
+      "satellite_url": "$SATELLITE_HOST",
+      "verify_satellite_certificate": true
+    }
   },
   "environment": "production",
   "environment_trumps": false,

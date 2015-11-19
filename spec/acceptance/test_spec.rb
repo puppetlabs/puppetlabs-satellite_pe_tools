@@ -13,43 +13,20 @@ end
 describe 'satellite_pe_tools tests' do
   before(:all) do
     satellite_update_setting(satellite_host, "restrict_registered_puppetmasters", false)
-    
-    pp = <<-EOS
-        ini_setting { "satelliteconf2":
-          ensure  => present,
-          path    => "${::settings::confdir}/puppet.conf",
-          section => 'user',
-          setting => 'reports',
-          value   => 'satellite',
-        }
-        EOS
 
-    apply_manifest(pp, :catch_failures => true)
+    run_script_on "master",
+      project_root + '/config/scripts/pe_master_classification.sh',
+      { 'SATELLITE_HOST' => satellite_host }
 
-    if master['pe_dir'] =~ /3\.8/
-      run_script_on "master", project_root + '/config/scripts/facts_terminus_config-3.sh'
-    else
-      run_script_on "master", project_root + '/config/scripts/facts_terminus_config.sh'
-    end
+    run_script_on "master",
+      project_root + '/config/scripts/sut_classification.sh'
 
-    on "master", "service pe-puppetserver restart"
     on "master", "puppet agent -t", {:acceptable_exit_codes => [0,2]}
   end
 
   context 'report tests' do
     it 'applies' do
-      pp = <<-EOS
-        class {'satellite_pe_tools':
-          satellite_url => "https://#{satellite_host}",
-          verify_satellite_certificate => true,
-        }
-
-        notify {'This is a test from Puppet to Satellite':
-          require => Class['satellite_pe_tools']
-        }
-      EOS
-
-      apply_manifest(pp, :catch_failures => true)
+      shell "FACTER_role=satellite_sut puppet agent -t", {:acceptable_exit_codes => [0,2]}
     end
 
     it 'should contain the report text in Satellite' do
@@ -59,14 +36,6 @@ describe 'satellite_pe_tools tests' do
 
   context 'facts tests' do
     it 'applies' do
-      pp = <<-EOS
-        class {'satellite_pe_tools':
-          satellite_url => "https://#{satellite_host}",
-          verify_satellite_certificate => true,
-        }
-        EOS
-
-      apply_manifest(pp, :catch_failures => true)
       on "master", "puppet agent -t", {:acceptable_exit_codes => [0,2]}
     end
 
