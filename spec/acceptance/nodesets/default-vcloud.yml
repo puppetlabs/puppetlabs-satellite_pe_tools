@@ -6,7 +6,7 @@ HOSTS:
       - dashboard
       - database
     platform: el-7-x86_64
-    pe_dir: http://neptune.puppetlabs.lan/2015.2/ci-ready
+    pe_dir: http://neptune.puppetlabs.lan/2015.3/ci-ready
     hypervisor: vcloud
     template: redhat-7-x86_64
   satellite:
