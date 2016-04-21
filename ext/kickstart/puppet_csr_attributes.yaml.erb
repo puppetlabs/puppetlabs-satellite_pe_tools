@@ -4,7 +4,8 @@ name: PE Trusted Facts
 %>  
 
 <%= require 'yaml'
-   puppet_registered_extensions = ['pp_uid',
+  puppet_registered_extensions = [
+     'pp_uid',
      'pp_instance_id',
      'pp_image_name',
      'pp_preshared_key',
@@ -20,7 +21,16 @@ name: PE Trusted Facts
      'pp_software_version',
      'pp_department',
      'pp_cluster',
-     'pp_provisioner'
+     'pp_provisioner',
+     'pp_region',
+     'pp_datacenter',
+     'pp_zone',
+     'pp_network',
+     'pp_securitypolicy',
+     'pp_cloudplatform',
+     'pp_datacenter',
+     'pp_apptier',
+     'pp_hostname'
    ]
 
    csr_attributes = {'custom_attributes' => Hash.new, 'extension_requests' => Hash.new}
