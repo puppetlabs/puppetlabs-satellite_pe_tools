@@ -61,7 +61,7 @@ class satellite_pe_tools(
     url      => $satellite_url,
     ssl_ca   => $ssl_ca_real,
     ssl_cert => $ssl_cert,
-    ssl_key  => $ssl_key
+    ssl_key  => $ssl_key,
   }
 
   pe_ini_subsetting { 'reports_satellite' :
@@ -87,9 +87,9 @@ class satellite_pe_tools(
 
   if ($manage_default_ca_cert) and ($::osfamily == 'RedHat') {
     exec {'download_install_katello_cert_rpm':
-      path    => '/usr/bin',
-      command => "curl -k ${satellite_url}/pub/katello-ca-consumer-latest.noarch.rpm > /tmp/katello-ca-consumer-latest.noarch.rpm ; yum -y install /tmp/katello-ca-consumer-latest.noarch.rpm",
-      creates => '/etc/rhsm/ca/katello-server-ca.pem'
+      path    => ['/usr/bin', '/bin',],
+      command => "curl -k -o /tmp/katello-ca-consumer-latest.noarch.rpm ${satellite_url}/pub/katello-ca-consumer-latest.noarch.rpm && yum -y install /tmp/katello-ca-consumer-latest.noarch.rpm",
+      creates => '/etc/rhsm/ca/katello-server-ca.pem',
     }
 
     file { '/etc/puppetlabs/puppet/ssl/ca/katello-default-ca.crt':
