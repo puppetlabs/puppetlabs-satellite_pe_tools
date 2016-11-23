@@ -1,5 +1,7 @@
 # satellite_pe_tools
 
+sausage!
+
 #### Table of Contents
 
 1. [Description](#description)
@@ -162,8 +164,8 @@ processor and facts indirector to communicate with Satellite.
 
 The satellite_pe_tools module requires Red Hat Satellite 6 and Puppet Enterprise 3.8.1 or later. This module is supported on:
 
-* Red Hat 7
-* CentOS 7
+* Red Hat Enterprise Linux 6, 7
+* CentOS 6, 7
 * Oracle Linux 7
 * Scientific Linux 7
 
