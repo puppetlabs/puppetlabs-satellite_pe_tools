@@ -1,5 +1,7 @@
 # satellite_pe_tools
 
+sausage!
+
 #### Table of Contents
 
 1. [Description](#description)
@@ -62,11 +64,26 @@ parameter to the `puppet_enterprise::profile::master` class with a string value 
 
   Note: In the following steps, 'satellite.example.com' should be replaced by the FQDN of your Puppet master.
 
-  4a. On the Satellite server, run the following command: `capsule-certs-generate --capsule-fqdn "satellite.example.com --certs-tar "~/satellite.example.com-certs.tar"`.
+  4a. On the Satellite server, run the following command:
 
-  4b. Untar the newly created file: `tar -xvf ~/satellite.example.com-certs.tar`. This creates a new folder: `~/ssl-build`.
+```
+capsule-certs-generate --capsule-fqdn "satellite.example.com" \
+   --certs-tar "~/satellite.example.com-certs.tar"
+```
 
-  4c. Copy the following two files to your Puppet master: `~/ssl-build/satellite.example.com/satellite.example.com-puppet-client.crt` and `~/ssl-build/satellite.example.com/satellite.example.com-puppet-client.key`. We recommend copying the files to `/etc/puppetlabs/puppet/ssl/satellite` (on PE 2015.x) or `/etc/puppet/ssl/satellite` (PE 3.x) on your master.
+  4b. Untar the newly created file:
+
+```
+tar -xvf ~/satellite.example.com-certs.tar
+```
+
+  This creates a new folder: `~/ssl-build`.
+
+  4c. Copy the following two files to your Puppet master:
+    - `~/ssl-build/satellite.example.com/satellite.example.com-puppet-client.crt`
+    - `~/ssl-build/satellite.example.com/satellite.example.com-puppet-client.key`
+
+  We recommend copying the files to `/etc/puppetlabs/puppet/ssl/satellite` (on PE 2015.x) or `/etc/puppet/ssl/satellite` (PE 3.x) on your master.
 
   4d. On your Puppet master, set the ownership of these two files to `pe-puppet`.
 
@@ -77,7 +94,9 @@ parameter to the `puppet_enterprise::profile::master` class with a string value 
   chown pe-puppet /etc/puppetlabs/puppet/ssl/satellite/satellite.example.com-puppet-client.key
   ~~~
 
-  4e. In the Satellite UI, go to *Administer -> Settings -> Auth* and set the `restrict_registered_puppetmasters` parameter to true. Additionally, add your Puppet master's FQDN to the `trusted_puppetmaster_hosts` array on the same page; for example, `[satellite.example.com]`
+  4e. In the Satellite UI, go to *Administer -> Settings -> Auth* and set the `restrict_registered_puppetmasters` parameter to true. Additionally, add your Puppet master's FQDN to the `trusted_puppetmaster_hosts` array on the same page; for example, `[satellite.example.com]`.
+
+  On Satellite 6.2 (and since Foreman 1.8.0) the `restrict_registered_puppetmasters` setting has been renamed to `restrict_registered_smart_proxies` (labelled "Restrict registered capsules"). trusted_puppetmaster_hosts has been given the label "Trusted puppetmaster hosts" in the UX. You can see the actual setting names by mousing over the label.
 
   4f. Set the `ssl_cert` and `ssl_key` parameters in your `satellite_pe_tools` class to the location on your Puppet master of the two files respectively.
 
@@ -97,8 +116,8 @@ parameter to the `puppet_enterprise::profile::master` class with a string value 
 
 ~~~puppet
 class {'satellite_pe_tools':
-	satellite_url => "https://satellite.example.com",
-    verify_satellite_certificate => true,
+  satellite_url                => "https://satellite.example.com",
+  verify_satellite_certificate => true,
 }
 ~~~
 
@@ -106,7 +125,7 @@ This example tells the master the location of the Satellite server (`https://sat
 
 ## Debugging
 
-In addition to looking through the usual reports in the Puppet Enterprise Console, you can also view the Satellite API log file, which may provide clues as to what a paticular issue may be. This file is located at `/var/log/httpd/foreman-ssl_access_ssl.log` on your Satellite server.
+In addition to looking through the usual reports in the Puppet Enterprise Console, you can also view the Satellite API log file, which may provide clues as to what a particular issue may be. This file is located at `/var/log/httpd/foreman-ssl_access_ssl.log` on your Satellite server.
 
 An example of a SSL authentication failure (note the '403'):
 
@@ -128,8 +147,6 @@ The only class of the module, `satellite_pe_tools` configures Puppet's report
 processor and facts indirector to communicate with Satellite.
 
 #### Parameters
-
-All parameters are **required** unless otherwise specified.
 
 * `manage_default_ca_cert` - Applicable to Red Hat-based systems only. When set to true, the module transfers the Satellite server's default CA certificate from the Satellite server to the master. This uses an untrusted SSL connection. Defaults to true.
 
