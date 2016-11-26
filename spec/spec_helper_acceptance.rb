@@ -1,5 +1,5 @@
-require 'beaker-rspec/spec_helper'
-require 'beaker-rspec/helpers/serverspec'
+require 'beaker-rspec'
+require 'beaker/puppet_install_helper'
 
 def project_root
   File.expand_path(File.join(File.dirname(__FILE__), '..'))
@@ -19,8 +19,9 @@ def install_satellite_on(role)
   end
 end
 
+run_puppet_install_helper
+
 unless ENV['RS_PROVISION'] == 'no' or ENV['BEAKER_provision'] == 'no'
-  install_pe_on(find_hosts_with_role('master'), options)
   install_satellite_on 'satellite'
   on "master", puppet('module install puppetlabs-inifile'), { :acceptable_exit_codes => [0,1] }
 end
