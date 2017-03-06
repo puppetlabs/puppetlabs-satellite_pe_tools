@@ -15,12 +15,14 @@ def install_satellite_on(role)
     fqdn = on(host, "hostname --fqdn").stdout.strip
     on host, "grep #{fqdn} /etc/hosts || sed -i 's/satellite/#{fqdn} satellite/' /etc/hosts"
     on host, "service firewalld stop"
+    on host, "sed -i 's/nameserver.*$/nameserver 10.240.1.10/' /etc/resolv.conf"
+    run_script_on host, project_root + '/config/scripts/redhat_repo.sh'
     run_script_on host, project_root + '/config/scripts/install_satellite.sh'
   end
 end
 
 unless ENV['RS_PROVISION'] == 'no' or ENV['BEAKER_provision'] == 'no'
-  install_pe_on(find_hosts_with_role('master'), options)
+  install_puppet_on(find_hosts_with_role('master'), options)
   install_satellite_on 'satellite'
   on "master", puppet('module install puppetlabs-inifile'), { :acceptable_exit_codes => [0,1] }
 end
