@@ -2,8 +2,8 @@
 
 if ! [ -d /opt/satellite ]; then
   mkdir -p /mnt/iso
-  curl http://osmirror.delivery.puppetlabs.net/iso/satellite-6.0.4-rhel-7-x86_64-dvd.iso > /tmp/satellite-6.0.4-rhel-7-x86_64-dvd.iso
-  mount /tmp/satellite-6.0.4-rhel-7-x86_64-dvd.iso -o loop /mnt/iso
+  curl http://int-resources.ops.puppetlabs.net/carl/satellite-6.2.7-rhel-7-x86_64-dvd.iso > /tmp/satellite-6.2.7-rhel-7-x86_64-dvd.iso
+  mount /tmp/satellite-6.2.7-rhel-7-x86_64-dvd.iso -o loop /mnt/iso
   
   cd /mnt/iso
   /mnt/iso/install_packages
