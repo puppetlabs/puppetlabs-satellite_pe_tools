@@ -8,7 +8,7 @@ if ! [ -d /opt/satellite ]; then
   cd /mnt/iso
   /mnt/iso/install_packages
 
-  katello-installer --capsule-dns false --capsule-tftp true --foreman-admin-password "puppetlabs"
+  satellite-installer --scenario satellite  --foreman-admin-password "puppetlabs"
 
   puppet agent -t
 fi
