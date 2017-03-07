@@ -1,5 +1,5 @@
 HOSTS:
-  master:
+  master.vm:
     roles:
       - master
       - agent
@@ -8,13 +8,13 @@ HOSTS:
     platform: el-7-x86_64
     box : puppetlabs/centos-7.0-64-nocm
     hypervisor : vagrant_virtualbox
-    pe_dir: http://neptune.puppetlabs.lan/2015.2/ci-ready
-  satellite:
+    pe_dir: http://enterprise.delivery.puppetlabs.net/2017.1/ci-ready/
+    pe_ver: '2017.1.0-rc3-4-g5264413'
+  satellite.vm:
     roles:
       - satellite
     platform: el-7-x86_64
-    box: rhel-70-x64-vbox-nocm
-    box_url: http://int-resources.ops.puppetlabs.net/vagrant/puppetless_boxes/rhel-70.virtualbox.box
+    box: rhel_72
     hypervisor : vagrant_virtualbox
 CONFIG:
   log_level: debug
