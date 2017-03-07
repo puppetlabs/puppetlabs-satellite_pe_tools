@@ -2,6 +2,7 @@ source 'https://rubygems.org'
 
 group :development do
   gem 'beaker-rspec'
+  gem 'beaker-pe'
 end
 
 puppetversion = ENV.key?('PUPPET_VERSION') ? "= #{ENV['PUPPET_VERSION']}" : ['>= 3.3']
