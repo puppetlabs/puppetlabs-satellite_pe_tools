@@ -34,8 +34,11 @@ def generate_and_transfer_satellite_cert_from_sat_to_pe
     target_puppet_master_fqdn = on(master, "facter fqdn").stdout.strip
     on target_satellite_host, "sudo capsule-certs-generate --capsule-fqdn #{target_puppet_master_fqdn} --certs-tar \"~/#{target_puppet_master_fqdn}-certs.tar\""
 
-    scp_from(target_satellite_host, "~/ssl-build/#{target_puppet_master_fqdn}/#{target_puppet_master_fqdn}-puppet-client.crt", project_root + "/")
-    scp_from(target_satellite_host, "~/ssl-build/#{target_puppet_master_fqdn}/#{target_puppet_master_fqdn}-puppet-client.key", project_root + "/")
+    #Copy the SSL certs from Satellite to PE
+    on(target_satellite_host, 'sudo mv /root/ssl-build /tmp')
+    on(target_satellite_host, 'sudo chmod -R 0755 /tmp/ssl-build')
+    scp_from(target_satellite_host, "/tmp/ssl-build/#{target_puppet_master_fqdn}/#{target_puppet_master_fqdn}-puppet-client.crt", project_root + "/")
+    scp_from(target_satellite_host, "/tmp/ssl-build/#{target_puppet_master_fqdn}/#{target_puppet_master_fqdn}-puppet-client.key", project_root + "/")
     scp_to(master, project_root + "/#{target_puppet_master_fqdn}-puppet-client.crt", "~/")
     scp_to(master, project_root + "/#{target_puppet_master_fqdn}-puppet-client.key", "~/")
     
