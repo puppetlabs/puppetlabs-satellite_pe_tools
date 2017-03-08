@@ -73,7 +73,7 @@ RSpec.configure do |c|
   # Configure all nodes in nodeset
   c.before :suite do
     # Install module and dependencies
-    copy_module_to('master', :source => project_root, :module_name => 'satellite_pe_tools')
+    copy_module_to('master', :source => project_root, :module_name => 'satellite_pe_tools', :target_module_path => '/etc/puppetlabs/code/modules')
   end
 end
 
