@@ -34,10 +34,10 @@ def generate_and_transfer_satellite_cert_from_sat_to_pe
     target_puppet_master_fqdn = on(master, "facter fqdn").stdout.strip
     on target_satellite_host, "sudo capsule-certs-generate --capsule-fqdn #{target_puppet_master_fqdn} --certs-tar \"~/#{target_puppet_master_fqdn}-certs.tar\""
 
-    scp_from(target_satellite_host, "~/ssl-build/#{target_puppet_master_fqdn}/#{target_puppet_master_fqdn}-puppet-client.crt", project_root)
-    scp_from(target_satellite_host, "~/ssl-build/#{target_puppet_master_fqdn}/#{target_puppet_master_fqdn}-puppet-client.key", project_root)
-    scp_to(master, project_root + "#{target_puppet_master_fqdn}-puppet-client.crt", "~/")
-    scp_to(master, project_root + "#{target_puppet_master_fqdn}-puppet-client.key", "~/")
+    scp_from(target_satellite_host, "~/ssl-build/#{target_puppet_master_fqdn}/#{target_puppet_master_fqdn}-puppet-client.crt", project_root + "/")
+    scp_from(target_satellite_host, "~/ssl-build/#{target_puppet_master_fqdn}/#{target_puppet_master_fqdn}-puppet-client.key", project_root + "/")
+    scp_to(master, project_root + "/#{target_puppet_master_fqdn}-puppet-client.crt", "~/")
+    scp_to(master, project_root + "/#{target_puppet_master_fqdn}-puppet-client.key", "~/")
     
     on master, "sudo mkdir -p /etc/puppetlabs/puppet/ssl/satellite"
     on master, "sudo cp ~/#{target_puppet_master_fqdn}-puppet-client.crt /etc/puppetlabs/puppet/ssl/satellite/#{target_puppet_master_fqdn}-puppet-client.crt"
@@ -97,7 +97,7 @@ def satellite_post(ip, resource, json_data)
     ).execute
     results = JSON.parse(response.to_str)
   rescue => e
-    e.response
+    puts "ERROR: " + e.message
   end
 end
 
@@ -117,7 +117,7 @@ def satellite_get(ip, resource)
     ).execute
     results = JSON.parse(response.to_str)
   rescue => e
-    e.response
+    puts "ERROR: " + e.message
   end
 end
 
@@ -131,9 +131,9 @@ def satellite_update_setting(ip, setting, value)
 end
 
 def satellite_get_last_report(satellite_host, test_host)
-  satellite_get(satellite_host, "hosts/#{test_host}/reports/last")['logs'].join("\n")
+  satellite_get(satellite_host, "hosts/#{test_host}/reports/last")
 end
 
 def satellite_get_facts(satellite_host, test_host)
-  satellite_get(satellite_host, "hosts/#{test_host}/facts").to_s
+  satellite_get(satellite_host, "hosts/#{test_host}/facts")
 end
