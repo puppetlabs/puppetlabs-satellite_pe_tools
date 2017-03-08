@@ -14,7 +14,8 @@ HOSTS:
     roles:
       - satellite
     platform: el-7-x86_64
-    box: rhel_72
+    box: rhel-72
+    box_url: http://int-resources.ops.puppetlabs.net/vagrant/puppetless_boxes/rhel-7.2-x86_64.virtualbox.box
     hypervisor : vagrant_virtualbox
 CONFIG:
   log_level: debug
