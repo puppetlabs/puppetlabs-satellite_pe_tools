@@ -122,12 +122,7 @@ def satellite_get(ip, resource)
 end
 
 def satellite_update_setting(ip, setting, value)
-  satellite_post(ip, "settings/#{setting}", JSON.generate(
-    {
-      "id"=> "#{setting}", 
-      "setting" => {"value" => value}
-    })
-  )
+  on('satellite', "hammer --username admin --password puppetlabs settings set --id '#{setting}' --value '#{value.to_s}'")
 end
 
 def satellite_get_last_report(satellite_host, test_host)

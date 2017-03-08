@@ -22,7 +22,7 @@ end
 
 describe 'satellite_pe_tools tests' do
   before(:all) do
-    satellite_update_setting(satellite_host, "trusted_puppetmaster_hosts", Array(master_host))
+    satellite_update_setting("trusted_puppetmaster_hosts", Array(master_host))
     run_script_on "master", project_root + terminus_config
     on "master", "service pe-puppetserver restart"
     on "master", "puppet agent -t", {:acceptable_exit_codes => [0,2]}
