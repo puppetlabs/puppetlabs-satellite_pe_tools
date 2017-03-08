@@ -3,11 +3,13 @@ require 'spec_helper_acceptance'
 # The following block is required due to differences in networking
 # setup as well as functionality in beaker between vagrant and vmpooler
 if default['hypervisor'] =~ /vagrant/
-  satellite_host = hosts_as('satellite').first["ip"]
-  master_host = "master"
+  satellite_hostname = hosts_as('satellite').first.name
+  satellite_host = on('satellite', "cat /etc/hosts | grep #{satellite_hostname} | tail -1 | awk '{print $1}'").stdout.strip
+  master_host = "master.vm"
 else
-  satellite_host = hosts_as('satellite').first.hostname
-  master_host = hosts_as('master').first.hostname
+	satellite_hostname = hosts_as('satellite').first.hostname
+	satellite_host = satellite_hostname
+	master_host = hosts_as('master').first.hostname
 end
 
 if master['pe_dir'] =~ /3\.8/
@@ -20,7 +22,7 @@ end
 
 describe 'satellite_pe_tools tests' do
   before(:all) do
-    satellite_update_setting(satellite_host, "restrict_registered_puppetmasters", false)
+    satellite_update_setting(satellite_host, "trusted_puppetmaster_hosts", Array(master_host))
     run_script_on "master", project_root + terminus_config
     on "master", "service pe-puppetserver restart"
     on "master", "puppet agent -t", {:acceptable_exit_codes => [0,2]}
@@ -31,8 +33,10 @@ describe 'satellite_pe_tools tests' do
       manifest_str = "cat <<EOF > #{manifest_location}
           node default {
             class {'satellite_pe_tools':
-              satellite_url => 'https://#{satellite_host}',
+              satellite_url => 'https://#{satellite_hostname}',
               verify_satellite_certificate => true,
+              ssl_key  => '/etc/puppetlabs/puppet/ssl/satellite/#{master_host}-puppet-client.key',
+              ssl_cert => '/etc/puppetlabs/puppet/ssl/satellite/#{master_host}-puppet-client.crt',
             }
 
             notify {'This is a test from Puppet to Satellite':
@@ -46,7 +50,7 @@ EOF"
     end
 
     it 'should contain the report text in Satellite' do
-      expect(satellite_get_last_report(satellite_host, master_host)).to match(/This is a test from Puppet to Satellite/)
+      expect(satellite_get_last_report(satellite_host, master_host).to_s).to match(/This is a test from Puppet to Satellite/)
     end
   end
 
@@ -55,8 +59,10 @@ EOF"
       manifest_str = "cat <<EOF > #{manifest_location}
           node default {
             class {'satellite_pe_tools':
-              satellite_url => 'https://#{satellite_host}',
+              satellite_url => 'https://#{satellite_hostname}',
               verify_satellite_certificate => true,
+              ssl_key  => '/etc/puppetlabs/puppet/ssl/satellite/#{master_host}-puppet-client.key',
+              ssl_cert => '/etc/puppetlabs/puppet/ssl/satellite/#{master_host}-puppet-client.crt',
             }
           }
 EOF"
@@ -66,7 +72,7 @@ EOF"
     end
 
     it 'should contain the fact text in Satellite' do
-      expect(satellite_get_facts(satellite_host, master_host)).to match(/#{hosts_as('master').first.ip}/)
+      expect(satellite_get_facts(satellite_host, master_host)['total']).not_to eq(0)
     end
   end
 end
