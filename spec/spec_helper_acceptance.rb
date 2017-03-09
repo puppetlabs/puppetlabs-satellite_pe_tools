@@ -35,16 +35,16 @@ def generate_and_transfer_satellite_cert_from_sat_to_pe
     on target_satellite_host, "sudo capsule-certs-generate --capsule-fqdn #{target_puppet_master_fqdn} --certs-tar \"~/#{target_puppet_master_fqdn}-certs.tar\""
 
     #Copy the SSL certs from Satellite to PE
-    on(target_satellite_host, 'sudo mv /root/ssl-build /tmp')
+    on(target_satellite_host, '[ -d /tmp/ssl-build ] || sudo mv /root/ssl-build /tmp')
     on(target_satellite_host, 'sudo chmod -R 0755 /tmp/ssl-build')
     scp_from(target_satellite_host, "/tmp/ssl-build/#{target_puppet_master_fqdn}/#{target_puppet_master_fqdn}-puppet-client.crt", project_root + "/")
     scp_from(target_satellite_host, "/tmp/ssl-build/#{target_puppet_master_fqdn}/#{target_puppet_master_fqdn}-puppet-client.key", project_root + "/")
-    scp_to(master, project_root + "/#{target_puppet_master_fqdn}-puppet-client.crt", "~/")
-    scp_to(master, project_root + "/#{target_puppet_master_fqdn}-puppet-client.key", "~/")
+    scp_to(master, project_root + "/#{target_puppet_master_fqdn}-puppet-client.crt", "/tmp/")
+    scp_to(master, project_root + "/#{target_puppet_master_fqdn}-puppet-client.key", "/tmp/")
     
     on master, "sudo mkdir -p /etc/puppetlabs/puppet/ssl/satellite"
-    on master, "sudo cp ~/#{target_puppet_master_fqdn}-puppet-client.crt /etc/puppetlabs/puppet/ssl/satellite/#{target_puppet_master_fqdn}-puppet-client.crt"
-    on master, "sudo cp ~/#{target_puppet_master_fqdn}-puppet-client.key /etc/puppetlabs/puppet/ssl/satellite/#{target_puppet_master_fqdn}-puppet-client.key"
+    on master, "sudo cp /tmp/#{target_puppet_master_fqdn}-puppet-client.crt /etc/puppetlabs/puppet/ssl/satellite/#{target_puppet_master_fqdn}-puppet-client.crt"
+    on master, "sudo cp /tmp/#{target_puppet_master_fqdn}-puppet-client.key /etc/puppetlabs/puppet/ssl/satellite/#{target_puppet_master_fqdn}-puppet-client.key"
     on master, "sudo chown pe-puppet /etc/puppetlabs/puppet/ssl/satellite/#{target_puppet_master_fqdn}-puppet-client.crt"
     on master, "sudo chown pe-puppet /etc/puppetlabs/puppet/ssl/satellite/#{target_puppet_master_fqdn}-puppet-client.key"
   end
@@ -124,7 +124,7 @@ def satellite_get(ip, resource)
   end
 end
 
-def satellite_update_setting(ip, setting, value)
+def satellite_update_setting(setting, value)
   on('satellite', "hammer --username admin --password puppetlabs settings set --id '#{setting}' --value '#{value.to_s}'")
 end
 
