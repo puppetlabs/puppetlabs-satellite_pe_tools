@@ -6,14 +6,15 @@ HOSTS:
       - dashboard
       - database
     platform: el-7-x86_64
-    pe_dir: http://neptune.puppetlabs.lan/2015.3/ci-ready
-    hypervisor: vcloud
+    hypervisor: vmpooler
     template: redhat-7-x86_64
   satellite:
+    disks:
+      - 16
     roles:
       - satellite
     platform: el-7-x86_64
-    hypervisor: vcloud
+    hypervisor: vmpooler
     template: redhat-7-x86_64
 CONFIG:
   nfs_server: none
@@ -21,4 +22,4 @@ CONFIG:
   datastore: instance0
   folder: Delivery/Quality Assurance/Enterprise/Dynamic
   resourcepool: delivery/Quality Assurance/Enterprise/Dynamic
-  pooling_api: http://vcloud.delivery.puppetlabs.net/
+  pooling_api: http://vmpooler.delivery.puppetlabs.net/

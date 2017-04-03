@@ -9,7 +9,7 @@ HOSTS:
     box : puppetlabs/centos-7.0-64-nocm
     hypervisor : vagrant_virtualbox
     pe_dir: http://enterprise.delivery.puppetlabs.net/2017.1/ci-ready/
-    pe_ver: '2017.1.0-rc3-4-g5264413'
+    pe_ver: '2017.1.0-rc3-7-gf049115'
   satellite.vm:
     roles:
       - satellite
