@@ -28,7 +28,6 @@ read -r -d '' PE_MASTER_POST << MASTER_JSON
   "environment_trumps": false,
   "id": "$(find_guid 'PE Master')",
   "name": "PE Master",
-  "parent": "$(find_guid 'PE Infrastructure')",
   "rule": [
     "or",
     [ "=", "name", "$PE_CERTNAME" ]

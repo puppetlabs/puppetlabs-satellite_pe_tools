@@ -11,3 +11,5 @@ log/
 .idea/
 *.iml
 katello-default-ca.crt
+master.vm-puppet-client.crt
+master.vm-puppet-client.key
