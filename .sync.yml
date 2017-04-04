@@ -1,0 +1,42 @@
+---
+CONTRIBUTING.md:
+  unmanaged: true
+
+Gemfile:
+  optional:
+    ':system_tests':
+      - gem: 'rest-client'
+
+.gitignore:
+  paths:
+    - 'katello-default-ca.crt'
+
+LICENSE:
+  unmanaged: true
+
+Rakefile:
+  unmanaged: true
+
+spec/acceptance/nodesets/default.yml:
+  unmanaged: true
+
+spec/acceptance/nodesets/centos-7-x64.yml:
+  unmanaged: true
+
+spec/acceptance/nodesets/debian-8-x64.yml:
+  unmanaged: true
+
+spec/acceptance/nodesets/docker/centos-7.yml:
+  unmanaged: true
+
+spec/acceptance/nodesets/docker/ubuntu-14.04.yml:
+  unmanaged: true
+
+spec/acceptance/nodesets/docker/debian-8.yml:
+  unmanaged: true
+
+spec/spec_helper.rb:
+  allow_deprecations: true
+
+.travis.yml:
+  docker_sets: []

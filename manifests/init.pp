@@ -64,7 +64,7 @@ class satellite_pe_tools(
     ssl_key  => $ssl_key,
   }
 
-  pe_ini_subsetting { 'reports_satellite' :
+  ini_subsetting { 'reports_satellite' :
     ensure               => present,
     path                 => "${::settings::confdir}/puppet.conf",
     section              => 'master',
