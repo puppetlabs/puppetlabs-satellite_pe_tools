@@ -1,5 +1,5 @@
 fixtures:
   repositories:
-    "pe_inifile": "git@github.com:puppetlabs/puppetlabs-pe_inifile.git"
+    "inifile": "git://github.com/puppetlabs/puppetlabs-inifile.git"
   symlinks:
     "satellite_pe_tools": "#{source_dir}"
