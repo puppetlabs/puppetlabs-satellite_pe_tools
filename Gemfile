@@ -50,9 +50,10 @@ group :development do
 end
 
 group :system_tests do
-  gem 'beaker', *location_for(ENV['BEAKER_VERSION'] || '~> 2.20')                if supports_windows
-  gem 'beaker', *location_for(ENV['BEAKER_VERSION'])                             if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new('2.3.0') and ! supports_windows
+  #gem 'beaker', *location_for(ENV['BEAKER_VERSION'] || '~> 2.20')                if supports_windows
+  #gem 'beaker', *location_for(ENV['BEAKER_VERSION'])                             if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new('2.3.0') and ! supports_windows
   gem 'beaker', *location_for(ENV['BEAKER_VERSION'] || '< 3')                    if Gem::Version.new(RUBY_VERSION) < Gem::Version.new('2.3.0') and ! supports_windows
+  gem 'beaker', :git => 'git@github.com:eputnam/beaker', :ref => 'vmpooler_disk' if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new('2.3.0')
   gem 'beaker-pe',                                                               :require => false if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new('2.3.0')
   gem 'beaker-rspec', *location_for(ENV['BEAKER_RSPEC_VERSION'] || '>= 3.4')     if ! supports_windows
   gem 'beaker-rspec', *location_for(ENV['BEAKER_RSPEC_VERSION'] || '~> 5.1')     if supports_windows
