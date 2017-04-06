@@ -1,4 +1,7 @@
 ---
+appveyor.yml:
+  delete: true
+
 CONTRIBUTING.md:
   unmanaged: true
 
@@ -12,7 +15,7 @@ Gemfile:
     - 'katello-default-ca.crt'
 
 LICENSE:
-  unmanaged: true
+  license_type: 'puppetpe'
 
 Rakefile:
   unmanaged: true
