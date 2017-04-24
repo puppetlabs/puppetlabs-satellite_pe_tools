@@ -99,4 +99,22 @@ class satellite_pe_tools(
       before  => File['satellite_config_yaml'],
     }
   }
+
+  if $ssl_cert {
+    file { $ssl_cert:
+      ensure => file,
+      owner  => 'pe-puppet',
+      group  => 'pe-puppet',
+      mode   => 0640,
+    }
+  }
+
+  if $ssl_key {
+    file { $ssl_key:
+      ensure => file,
+      owner  => 'pe-puppet',
+      group  => 'pe-puppet',
+      mode   => 0640,
+    }
+  }
 }
