@@ -60,39 +60,54 @@ parameter to the `puppet_enterprise::profile::master` class with a string value 
 
    To use SSL verification so that the Satellite server can verify the Puppet master, you must generate a SSL cert and key pair on the Satellite server, and then copy these files to your Puppet master.
 
-   Note: In the following steps, 'satellite.example.com' should be replaced by the FQDN of your Puppet master.
+   Note: In the following steps, 'puppet.example.com' should be replaced by the FQDN of your Puppet master.
 
    1. On the Satellite server, run the following command:
 
       ```
-      capsule-certs-generate --capsule-fqdn "satellite.example.com" \
-        --certs-tar "~/satellite.example.com-certs.tar"
+      capsule-certs-generate --capsule-fqdn "puppet.example.com" \
+        --certs-tar "~/puppet.example.com-certs.tar"
       ```
 
    1. Untar the newly created file:
 
       ```
-      tar -xvf ~/satellite.example.com-certs.tar
+      tar -xvf ~/puppet.example.com-certs.tar
       ```
 
-      This creates a new folder: `~/ssl-build`.
+      This creates a new folder: `~/ssl-build` which may contain either raw `.crt` and `.key` file, or a number of RPM files.
 
-   1. Copy the following two files to your Puppet master:
-      - `~/ssl-build/satellite.example.com/satellite.example.com-puppet-client.crt`
-      - `~/ssl-build/satellite.example.com/satellite.example.com-puppet-client.key`
+   1. If the ssl-build folder contains RPM files for the host, find and extract the contents of the puppet-client rpm file:
 
-      We recommend copying the files to `/etc/puppetlabs/puppet/ssl/satellite` (on PE 2015.x) or `/etc/puppet/ssl/satellite` (PE 3.x) on your master.
+      ```
+      cd ~/ssl-build/puppet.example.com
+      rpm2cpio puppet.example.com-puppet-client-1.0-1.noarch.rpm | cpio -idmv
+      ```
+
+      This will create a folder structure in the current directory beginning with `./etc/pki/katello-certs-tools/`
+
+   1. Copy the `.crt` and `.key` files to your Puppet master, found either at:
+
+      - `~/ssl-build/puppet.example.com/puppet.example.com-puppet-client.crt`
+      - `~/ssl-build/puppet.example.com/puppet.example.com-puppet-client.key`
+
+      or if you had to extract them from the RPM:
+
+      - `~/ssl-build/puppet.example.com/etc/pki/katello-certs-tools/certs/puppet.example.com-puppet-client.crt`
+      - `~/ssl-build/puppet.example.com/etc/pki/katello-certs-tools/private/puppet.example.com-puppet-client.key`
+
+      We recommend copying the files to `/etc/puppetlabs/puppet/ssl/satellite` (on PE >= 2015.x) or `/etc/puppet/ssl/satellite` (PE 3.x) on your master.
 
    1. On your Puppet master, set the ownership of these two files to `pe-puppet`.
 
       Example (Adjust paths and filenames accordingly):
 
       ~~~puppet
-      chown pe-puppet /etc/puppetlabs/puppet/ssl/satellite/satellite.example.com-puppet-client.crt
-      chown pe-puppet /etc/puppetlabs/puppet/ssl/satellite/satellite.example.com-puppet-client.key
+      chown pe-puppet /etc/puppetlabs/puppet/ssl/satellite/puppet.example.com-puppet-client.crt
+      chown pe-puppet /etc/puppetlabs/puppet/ssl/satellite/puppet.example.com-puppet-client.key
       ~~~
 
-   1. In the Satellite UI, go to *Administer -> Settings -> Auth* and set the `restrict_registered_puppetmasters` parameter to `true`. Additionally, add your Puppet master's FQDN to the `trusted_puppetmaster_hosts` array on the same page; for example, `[satellite.example.com]`.
+   1. In the Satellite UI, go to *Administer -> Settings -> Auth* and set the `restrict_registered_puppetmasters` parameter to `true`. Additionally, add your Puppet master's FQDN to the `trusted_puppetmaster_hosts` array on the same page; for example, `[puppet.example.com]`.
 
       On Satellite 6.2 (and since Foreman 1.8.0) the `restrict_registered_puppetmasters` setting has been renamed to `restrict_registered_smart_proxies` (labelled "Restrict registered capsules"). trusted_puppetmaster_hosts has been given the label "Trusted puppetmaster hosts" in the UX. You can see the actual setting names by mousing over the label.
 
@@ -114,12 +129,12 @@ parameter to the `puppet_enterprise::profile::master` class with a string value 
 
 ~~~puppet
 class {'satellite_pe_tools':
-  satellite_url                => "https://satellite.example.com",
+  satellite_url                => "https://puppet.example.com",
   verify_satellite_certificate => true,
 }
 ~~~
 
-This example tells the master the location of the Satellite server (`https://satellite.example.com`) and instructs it to verify the Satellite server's identity.
+This example tells the master the location of the Satellite server (`https://puppet.example.com`) and instructs it to verify the Satellite server's identity.
 
 ## Debugging
 
@@ -146,7 +161,7 @@ processor and facts indirector to communicate with Satellite.
 
 #### Parameters
 
-###### `manage_default_ca_cert` 
+###### `manage_default_ca_cert`
 
 Data type: Boolean.
 
