@@ -68,6 +68,7 @@ parameter to the `puppet_enterprise::profile::master` class with a string value 
       capsule-certs-generate --capsule-fqdn "puppet.example.com" \
         --certs-tar "~/puppet.example.com-certs.tar"
       ```
+      Note: Use `--foreman-proxy-fqdn` instead of `--capsule-fqdn` for Satellite 6.3
 
    1. Untar the newly created file:
 
