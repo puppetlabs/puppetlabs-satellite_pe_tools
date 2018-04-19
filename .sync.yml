@@ -17,6 +17,9 @@ Gemfile:
 LICENSE:
   license_type: 'puppetpe'
 
+NOTICE:
+  unmanaged: true
+
 Rakefile:
   unmanaged: true
 
