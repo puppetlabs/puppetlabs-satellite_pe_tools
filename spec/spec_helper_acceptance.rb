@@ -57,6 +57,9 @@ def ensure_subscription_manager_installed_on(host)
 end
 
 def expand_satellite_disk(host)
+  [0,1,2].each do |num|
+    on host, "echo '- - -' > /sys/class/scsi_host/host#{num}/scan"
+  end
   on host, "parted -s /dev/sdb mklabel gpt"
   on host, "parted -s /dev/sdb mkpart primary 2048 16000"
   on host, "mkfs.ext4 /dev/sdb1"
