@@ -2,21 +2,19 @@ require 'puppet/util/satellite'
 
 Puppet::Reports.register_report(:satellite) do
   Puppet.settings.use(:reporting)
-  desc "Sends reports directly to Satellite"
+  desc 'Sends reports directly to Satellite'
 
   include Puppet::Util::Satellite
 
   def process
-    begin
-      # check for report metrics
-      raise(Puppet::ParseError, "Invalid report: can't find metrics information for #{self.host}") if self.metrics.nil?
+    # check for report metrics
+    raise(Puppet::ParseError, "Invalid report: can't find metrics information for #{host}") if metrics.nil?
 
-      body = {'report' => generate_report}
+    body = { 'report' => generate_report }
 
-      Puppet.info "Submitting report to #{satellite_url}"
-      submit_request '/api/reports', body
-    rescue Exception => e
-      Puppet.err "Could not send report to Satellite: #{e}\n#{e.backtrace}"
-    end
+    Puppet.info "Submitting report to #{satellite_url}"
+    submit_request '/api/reports', body
+  rescue StandardError => e
+    Puppet.err "Could not send report to Satellite: #{e}\n#{e.backtrace}"
   end
 end
