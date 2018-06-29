@@ -1,3 +1,18 @@
+## Supported Release 2.1.0
+### Summary
+This is a minor release that includes changes to make this module compatible with 2018.1 and `pdk`. It also contains a roll up of minor changes and maintenance.
+
+#### Added
+- Converted with PDK 1.5.0, this module is now compatible with `pdk`.
+- Updated facts_terminus_scripts to run on 2018.1.
+
+##### Changed
+- Bumped 'puppetlabs-inifile' upper boundary from 2.0.0 to 3.0.0.
+
+#### Fixed
+- Put 'puppetlabs-stdlib' into fixtures to address unit tests failures.
+- Update docs for satellite 6 tarball-of-rpms certs.
+
 ## Supported Release 2.0.0
 ### Summary
 This is a major Puppet 4-only release that installs Redhat Satellite 6.2.
