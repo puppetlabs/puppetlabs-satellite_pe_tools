@@ -63,26 +63,26 @@ parameter to the `puppet_enterprise::profile::master` class with a string value 
 
 a. On the Satellite server, run the following command:
 
-      ```
-      capsule-certs-generate --capsule-fqdn "puppet.example.com" \
-        --certs-tar "~/puppet.example.com-certs.tar"
-      ```
+```
+capsule-certs-generate --capsule-fqdn "puppet.example.com" \
+--certs-tar "~/puppet.example.com-certs.tar"
+```
 > Note: Use `--foreman-proxy-fqdn` instead of `--capsule-fqdn` for Satellite 6.3
 
 b. Untar the newly created file:
 
-      ```
-      tar -xvf ~/puppet.example.com-certs.tar
-      ```
+```
+tar -xvf ~/puppet.example.com-certs.tar
+```
 
 This creates a new folder: `~/ssl-build`. This may contain either raw `.crt` and `.key` file, or a number of RPM files.
 
 c. If the ssl-build folder contains RPM files for the host, find and extract the contents of the puppet-client rpm file:
 
-      ```
-      cd ~/ssl-build/puppet.example.com
-      rpm2cpio puppet.example.com-puppet-client-1.0-1.noarch.rpm | cpio -idmv
-      ```
+```
+cd ~/ssl-build/puppet.example.com
+rpm2cpio puppet.example.com-puppet-client-1.0-1.noarch.rpm | cpio -idmv
+```
 
 This creates a folder structure in the current directory beginning with `./etc/pki/katello-certs-tools/`
 
@@ -103,10 +103,10 @@ e. On your Puppet master, set the ownership of these two files to `pe-puppet`:
 
 Example (adjust paths and filenames accordingly):
 
-      ~~~puppet
-      chown pe-puppet /etc/puppetlabs/puppet/ssl/satellite/puppet.example.com-puppet-client.crt
-      chown pe-puppet /etc/puppetlabs/puppet/ssl/satellite/puppet.example.com-puppet-client.key
-      ~~~
+```
+chown pe-puppet /etc/puppetlabs/puppet/ssl/satellite/puppet.example.com-puppet-client.crt
+chown pe-puppet /etc/puppetlabs/puppet/ssl/satellite/puppet.example.com-puppet-client.key
+```
 
 f. In the Satellite UI, go to *Administer -> Settings -> Auth* and set the `restrict_registered_puppetmasters` parameter to `true`. Additionally, add your Puppet master's FQDN to the `trusted_puppetmaster_hosts` array on the same page; for example, `[puppet.example.com]`.
 
