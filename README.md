@@ -61,7 +61,7 @@ parameter to the `puppet_enterprise::profile::master` class with a string value 
 
 > Note: In the following steps, replace `puppet.example.com` with the FQDN of your Puppet master.
 
-	a. On the Satellite server, run the following command:
+a. On the Satellite server, run the following command:
 
       ```
       capsule-certs-generate --capsule-fqdn "puppet.example.com" \
@@ -69,7 +69,7 @@ parameter to the `puppet_enterprise::profile::master` class with a string value 
       ```
 > Note: Use `--foreman-proxy-fqdn` instead of `--capsule-fqdn` for Satellite 6.3
 
-	b. Untar the newly created file:
+b. Untar the newly created file:
 
       ```
       tar -xvf ~/puppet.example.com-certs.tar
@@ -77,7 +77,7 @@ parameter to the `puppet_enterprise::profile::master` class with a string value 
 
 This creates a new folder: `~/ssl-build`. This may contain either raw `.crt` and `.key` file, or a number of RPM files.
 
-	c. If the ssl-build folder contains RPM files for the host, find and extract the contents of the puppet-client rpm file:
+c. If the ssl-build folder contains RPM files for the host, find and extract the contents of the puppet-client rpm file:
 
       ```
       cd ~/ssl-build/puppet.example.com
@@ -86,32 +86,33 @@ This creates a new folder: `~/ssl-build`. This may contain either raw `.crt` and
 
 This creates a folder structure in the current directory beginning with `./etc/pki/katello-certs-tools/`
 
-	d. Copy the `.crt` and `.key` files to your Puppet master, found either at:
+d. Copy the `.crt` and `.key` files to your Puppet master, found either at:
 
 `~/ssl-build/puppet.example.com/puppet.example.com-puppet-client.crt`
 
 `~/ssl-build/puppet.example.com/puppet.example.com-puppet-client.key`
 
-	Or if you had to extract them from the RPM: 
+Or if you had to extract them from the RPM: 
    `~/ssl-build/puppet.example.com/etc/pki/katello-certs-tools/certs/puppet.example.com-puppet-client.crt`
      `~/ssl-build/puppet.example.com/etc/pki/katello-certs-tools/private/puppet.example.com-puppet-client.key`
 
 Copy the files to `/etc/puppetlabs/puppet/ssl/satellite` (on PE >= 2015.x) or `/etc/puppet/ssl/satellite` (PE 3.x) on your master.
 
-	e. On your Puppet master, set the ownership of these two files to `pe-puppet`:
+e. On your Puppet master, set the ownership of these two files to `pe-puppet`:
 
-      Example (Adjust paths and filenames accordingly):
+
+Example (adjust paths and filenames accordingly):
 
       ~~~puppet
       chown pe-puppet /etc/puppetlabs/puppet/ssl/satellite/puppet.example.com-puppet-client.crt
       chown pe-puppet /etc/puppetlabs/puppet/ssl/satellite/puppet.example.com-puppet-client.key
       ~~~
 
-	f. In the Satellite UI, go to *Administer -> Settings -> Auth* and set the `restrict_registered_puppetmasters` parameter to `true`. Additionally, add your Puppet master's FQDN to the `trusted_puppetmaster_hosts` array on the same page; for example, `[puppet.example.com]`.
+f. In the Satellite UI, go to *Administer -> Settings -> Auth* and set the `restrict_registered_puppetmasters` parameter to `true`. Additionally, add your Puppet master's FQDN to the `trusted_puppetmaster_hosts` array on the same page; for example, `[puppet.example.com]`.
 
 On Satellite 6.2 (and since Foreman 1.8.0) the `restrict_registered_puppetmasters` setting has been renamed to `restrict_registered_smart_proxies` (labelled "Restrict registered capsules"). `trusted_puppetmaster_hosts` has been given the label "Trusted puppetmaster hosts" in the UX. You can see the actual setting names by mousing over the label.
 
-	g. Set the `ssl_cert` and `ssl_key` parameters in your `satellite_pe_tools` class to the location on your Puppet master of the two files respectively.
+g. Set the `ssl_cert` and `ssl_key` parameters in your `satellite_pe_tools` class to the location on your Puppet master of the two files respectively.
 
 If you do not want the Satellite server to verify the Puppet master identity, then in the Satellite UI, go to *Administer -> Settings -> Auth* and set the `restrict_registered_puppetmasters` parameter to `false`.
 
