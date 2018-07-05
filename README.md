@@ -13,13 +13,13 @@
 
 ## Description
 
-The satellite_pe_tools module configures Puppet's report processor and facts indirector to allow you to send Puppet reports and facts to your Red Hat Satellite server.
+The `satellite_pe_tools` module configures Puppet's report processor and facts indirector to allow you to send Puppet reports and facts to your Red Hat Satellite server.
 
 ## Setup
 
 ### Setup requirements
 
-This module requires Red Hat Satellite 6.2 and Puppet Enterprise 2016.4 or later.
+This module requires Red Hat Satellite 6.2 and Puppet Enterprise (PE) 2016.4 or later.
 
 ### Beginning with satellite_pe_tools
 
@@ -34,11 +34,11 @@ To set up communication between Satellite and your Puppet masters, follow these 
 
 1. Classify Puppet masters
 
-   Add the `satellite_pe_tools` class to the PE Master node group in the Puppet Enterprise Console. For details on adding classes to node groups, see the [Puppet Enterprise documentation](https://docs.puppet.com/pe/latest/console_classes_groups.html#adding-classes-to-a-node-group).
+   Add the `satellite_pe_tools` class to the PE master node group in the PE Console. For details on adding classes to node groups, see the [Puppet Enterprise documentation](https://docs.puppet.com/pe/latest/console_classes_groups.html#adding-classes-to-a-node-group).
 
 2. Set Puppet master facts terminus
 
-   In the PE Master node group in the PE Console, add the `facts_terminus`
+   In the PE master node group in the PE Console, add the `facts_terminus`
 parameter to the `puppet_enterprise::profile::master` class with a string value of 'satellite'. This sets Puppet runs on your Puppet masters to forward the facts to Satellite.
 
 3. Allow the Puppet master to verify the Satellite server's identity
@@ -55,72 +55,72 @@ parameter to the `puppet_enterprise::profile::master` class with a string value 
 
 4. Allow the Satellite server to verify the Puppet master's identity
 
-   By default, Satellite is configured to verify the SSL identity of the Puppet
-   Enterprise masters connecting to it. If the PE report processor and facts indirector are not using a certificate signed with the Satellite server's CA, the verification fails.
+   By default, Satellite is configured to verify the SSL identity of the PE masters connecting to it. If the PE report processor and facts indirector are not using a certificate signed with the Satellite server's CA, the verification fails.
 
    To use SSL verification so that the Satellite server can verify the Puppet master, you must generate a SSL cert and key pair on the Satellite server, and then copy these files to your Puppet master.
 
-   Note: In the following steps, 'puppet.example.com' should be replaced by the FQDN of your Puppet master.
+> Note: In the following steps, replace `puppet.example.com` with the FQDN of your Puppet master.
 
-   1. On the Satellite server, run the following command:
+a. On the Satellite server, run the following command:
 
-      ```
-      capsule-certs-generate --capsule-fqdn "puppet.example.com" \
-        --certs-tar "~/puppet.example.com-certs.tar"
-      ```
-      Note: Use `--foreman-proxy-fqdn` instead of `--capsule-fqdn` for Satellite 6.3
+```
+capsule-certs-generate --capsule-fqdn "puppet.example.com" \
+--certs-tar "~/puppet.example.com-certs.tar"
+```
+> Note: Use `--foreman-proxy-fqdn` instead of `--capsule-fqdn` for Satellite 6.3
 
-   1. Untar the newly created file:
+b. Untar the newly created file:
 
-      ```
-      tar -xvf ~/puppet.example.com-certs.tar
-      ```
+```
+tar -xvf ~/puppet.example.com-certs.tar
+```
 
-      This creates a new folder: `~/ssl-build` which may contain either raw `.crt` and `.key` file, or a number of RPM files.
+This creates a new folder: `~/ssl-build`. This may contain either raw `.crt` and `.key` file, or a number of RPM files.
 
-   1. If the ssl-build folder contains RPM files for the host, find and extract the contents of the puppet-client rpm file:
+c. If the ssl-build folder contains RPM files for the host, find and extract the contents of the puppet-client rpm file:
 
-      ```
-      cd ~/ssl-build/puppet.example.com
-      rpm2cpio puppet.example.com-puppet-client-1.0-1.noarch.rpm | cpio -idmv
-      ```
+```
+cd ~/ssl-build/puppet.example.com
+rpm2cpio puppet.example.com-puppet-client-1.0-1.noarch.rpm | cpio -idmv
+```
 
-      This will create a folder structure in the current directory beginning with `./etc/pki/katello-certs-tools/`
+This creates a folder structure in the current directory beginning with `./etc/pki/katello-certs-tools/`
 
-   1. Copy the `.crt` and `.key` files to your Puppet master, found either at:
+d. Copy the `.crt` and `.key` files to your Puppet master, found either at:
 
-      - `~/ssl-build/puppet.example.com/puppet.example.com-puppet-client.crt`
-      - `~/ssl-build/puppet.example.com/puppet.example.com-puppet-client.key`
+`~/ssl-build/puppet.example.com/puppet.example.com-puppet-client.crt`
 
-      or if you had to extract them from the RPM:
+`~/ssl-build/puppet.example.com/puppet.example.com-puppet-client.key`
 
-      - `~/ssl-build/puppet.example.com/etc/pki/katello-certs-tools/certs/puppet.example.com-puppet-client.crt`
-      - `~/ssl-build/puppet.example.com/etc/pki/katello-certs-tools/private/puppet.example.com-puppet-client.key`
+Or if you had to extract them from the RPM: 
+   `~/ssl-build/puppet.example.com/etc/pki/katello-certs-tools/certs/puppet.example.com-puppet-client.crt`
+     `~/ssl-build/puppet.example.com/etc/pki/katello-certs-tools/private/puppet.example.com-puppet-client.key`
 
-      We recommend copying the files to `/etc/puppetlabs/puppet/ssl/satellite` (on PE >= 2015.x) or `/etc/puppet/ssl/satellite` (PE 3.x) on your master.
+Copy the files to `/etc/puppetlabs/puppet/ssl/satellite` (on PE >= 2015.x) or `/etc/puppet/ssl/satellite` (PE 3.x) on your master.
 
-   1. On your Puppet master, set the ownership of these two files to `pe-puppet`.
+e. On your Puppet master, set the ownership of these two files to `pe-puppet`:
 
-      Example (Adjust paths and filenames accordingly):
 
-      ~~~puppet
-      chown pe-puppet /etc/puppetlabs/puppet/ssl/satellite/puppet.example.com-puppet-client.crt
-      chown pe-puppet /etc/puppetlabs/puppet/ssl/satellite/puppet.example.com-puppet-client.key
-      ~~~
+Example (adjust paths and filenames accordingly):
 
-   1. In the Satellite UI, go to *Administer -> Settings -> Auth* and set the `restrict_registered_puppetmasters` parameter to `true`. Additionally, add your Puppet master's FQDN to the `trusted_puppetmaster_hosts` array on the same page; for example, `[puppet.example.com]`.
+```
+chown pe-puppet /etc/puppetlabs/puppet/ssl/satellite/puppet.example.com-puppet-client.crt
+chown pe-puppet /etc/puppetlabs/puppet/ssl/satellite/puppet.example.com-puppet-client.key
+```
 
-      On Satellite 6.2 (and since Foreman 1.8.0) the `restrict_registered_puppetmasters` setting has been renamed to `restrict_registered_smart_proxies` (labelled "Restrict registered capsules"). trusted_puppetmaster_hosts has been given the label "Trusted puppetmaster hosts" in the UX. You can see the actual setting names by mousing over the label.
+f. In the Satellite UI, go to *Administer -> Settings -> Auth* and set the `restrict_registered_puppetmasters` parameter to `true`. Additionally, add your Puppet master's FQDN to the `trusted_puppetmaster_hosts` array on the same page; for example, `[puppet.example.com]`.
 
-   1. Set the `ssl_cert` and `ssl_key` parameters in your `satellite_pe_tools` class to the location on your Puppet master of the two files respectively.
+On Satellite 6.2 (and since Foreman 1.8.0) the `restrict_registered_puppetmasters` setting has been renamed to `restrict_registered_smart_proxies` (labelled "Restrict registered capsules"). `trusted_puppetmaster_hosts` has been given the label "Trusted puppetmaster hosts" in the UX. You can see the actual setting names by mousing over the label.
 
-      If you do not want the Satellite server to verify the Puppet master identity, then in the Satellite UI, go to *Administer -> Settings -> Auth* and set the `restrict_registered_puppetmasters` parameter to `false`.
+g. Set the `ssl_cert` and `ssl_key` parameters in your `satellite_pe_tools` class to the location on your Puppet master of the two files respectively.
 
-      Note that this setting presents a security risk, as false reports and facts can be sent to Satellite by a malicious system masquerading as a current Puppet master on your infrastructure that's been added to Satellite as a safe master.
+If you do not want the Satellite server to verify the Puppet master identity, then in the Satellite UI, go to *Administer -> Settings -> Auth* and set the `restrict_registered_puppetmasters` parameter to `false`.
+
+Note that this setting presents a security risk. False reports and facts can be sent to Satellite by a malicious system masquerading as a current Puppet master on your infrastructure that's been added to Satellite as a safe master.
 
 5. Enable pluginsync and reports in Puppet
 
-   On each Puppet agent, make sure the [`pluginsync`](https://docs.puppet.com/latest/configuration.html#pluginsync) and [`report`](https://docs.puppet.com/latest/configuration.html#report) settings are enabled. (Normally, these settings are enabled by default.)
+On each Puppet agent, make sure the [`pluginsync`](https://docs.puppet.com/latest/configuration.html#pluginsync) and [`report`](https://docs.puppet.com/latest/configuration.html#report) settings are enabled. These settings are usually enabled by default.
 
         [agent]
         report = true
