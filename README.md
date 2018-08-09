@@ -207,12 +207,9 @@ Default: `true`.
 
 ## Limitations
 
-The `satellite_pe_tools` module requires Red Hat Satellite 6.2 and Puppet Enterprise 2016.4 or later. This module is supported on:
+The `satellite_pe_tools` module requires Red Hat Satellite 6.2 and Puppet Enterprise 2016.4 or later. 
 
-* Red Hat Enterprise Linux 6, 7
-* CentOS 6, 7
-* Oracle Linux 7
-* Scientific Linux 7
+For an extensive list of supported operating systems, see [metadata.json](https://github.com/puppetlabs/puppetlabs-satellite_pe_tools/blob/master/metadata.json)
 
 ## Development
 
