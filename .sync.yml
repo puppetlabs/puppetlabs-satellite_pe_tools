@@ -41,9 +41,6 @@ LICENSE:
 NOTICE:
   unmanaged: true
 
-Rakefile:
-  unmanaged: true
-
 spec/acceptance/nodesets/default.yml:
   unmanaged: true
 
