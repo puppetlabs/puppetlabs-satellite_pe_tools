@@ -19,7 +19,7 @@
   ],
   "operatingsystem_support": [
     {
-      "operatingsystem": "RHEL",
+      "operatingsystem": "RedHat",
       "operatingsystemrelease": [
         "7"
       ]
