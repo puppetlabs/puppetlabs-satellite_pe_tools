@@ -2,7 +2,7 @@
 
 if ! [ -d /opt/satellite ]; then
   mkdir -p /mnt/iso
-  curl http://int-resources.ops.puppetlabs.net/carl/satellite-6.2.7-rhel-7-x86_64-dvd.iso > /tmp/satellite-6.2.7-rhel-7-x86_64-dvd.iso
+  curl http://10.234.0.63:8080/carl/satellite-6.2.7-rhel-7-x86_64-dvd.iso > /tmp/satellite-6.2.7-rhel-7-x86_64-dvd.iso
   mount /tmp/satellite-6.2.7-rhel-7-x86_64-dvd.iso -o loop /mnt/iso
   
   cd /mnt/iso
