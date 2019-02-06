@@ -5,7 +5,7 @@
   "summary": "Configures reports and inventory data to be sent to Satellite 6",
   "license": "proprietary",
   "source": "https://github.com/puppetlabs/puppetlabs-satellite_pe_tools",
-  "project_page": "https://forge.puppetlabs.com/puppetlabs/satellite_pe_tools",
+  "project_page": "https://github.com/puppetlabs/puppetlabs-satellite_pe_tools",
   "issues_url": "https://tickets.puppetlabs.com/browse/MODULES",
   "dependencies": [
     {
