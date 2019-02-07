@@ -11,6 +11,7 @@
 5. [Limitations - OS compatibility, etc.](#limitations)
 6. [Development - Guide for contributing to the module](#development)
 
+
 ## Description
 
 The `satellite_pe_tools` module configures Puppet's report processor and facts indirector to allow you to send Puppet reports and facts to your Red Hat Satellite server.
