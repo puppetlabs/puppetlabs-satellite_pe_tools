@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [2.3.0](https://github.com/puppetlabs/puppetlabs-satellite_pe_tools/tree/2.3.0) (2019-02-11)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-satellite_pe_tools/compare/2.2.0...2.3.0)
+
+### Fixed
+
+- Updated license terms [\#89](https://github.com/puppetlabs/puppetlabs-satellite_pe_tools/pull/89) ([turbodog](https://github.com/turbodog))
+- pdksync - \(FM-7655\) Fix rubygems-update for ruby \< 2.3 [\#86](https://github.com/puppetlabs/puppetlabs-satellite_pe_tools/pull/86) ([tphoney](https://github.com/tphoney))
+- \(FM-7529\) - Updating metadata to reflect support [\#82](https://github.com/puppetlabs/puppetlabs-satellite_pe_tools/pull/82) ([pmcmaw](https://github.com/pmcmaw))
+
 ## [2.2.0](https://github.com/puppetlabs/puppetlabs-satellite_pe_tools/tree/2.2.0) (2018-09-27)
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-satellite_pe_tools/compare/2.1.0...2.2.0)
