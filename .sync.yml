@@ -1,4 +1,11 @@
 ---
+.gitignore:
+  paths:
+    - 'katello-default-ca.crt'
+
+.gitlab-ci.yml:
+  unmanaged: true
+
 .travis.yml:
   docker_sets: []
   docker_defaults:
@@ -31,10 +38,6 @@ appveyor.yml:
 CONTRIBUTING.md:
   unmanaged: true
 
-.gitignore:
-  paths:
-    - 'katello-default-ca.crt'
-
 LICENSE:
   license_type: 'puppetpe'
 
@@ -61,6 +64,5 @@ spec/acceptance/nodesets/docker/debian-8.yml:
 
 spec/spec_helper.rb:
   allow_deprecations: true
-
-.gitlab-ci.yml:
-  unmanaged: true
+  coverage_report: true
+  mock_with: ':rspec'
