@@ -12,13 +12,8 @@ else
   master_host = hosts_as('master').first.hostname
 end
 
-if master['pe_dir'] =~ %r{3\.8}
-  terminus_config = '/config/scripts/facts_terminus_config-3.sh'
-  manifest_location = '/etc/puppetlabs/puppet/environments/production/manifests/site.pp'
-else
-  terminus_config = '/config/scripts/facts_terminus_config.sh'
-  manifest_location = '/etc/puppetlabs/code/environments/production/manifests/site.pp'
-end
+terminus_config = '/config/scripts/facts_terminus_config.sh'
+manifest_location = '/etc/puppetlabs/code/environments/production/manifests/site.pp'
 
 describe 'satellite_pe_tools tests' do
   before(:all) do
