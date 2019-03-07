@@ -1,5 +1,9 @@
 ---
 .gitignore:
+  required:
+    - ---.project
+
+.gitignore:
   paths:
     - 'katello-default-ca.crt'
 
