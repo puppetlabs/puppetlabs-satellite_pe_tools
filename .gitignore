@@ -22,6 +22,6 @@
 /convert_report.txt
 /update_report.txt
 .DS_Store
-.vscode/
 .envrc
+/inventory.yaml
 katello-default-ca.crt
