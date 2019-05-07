@@ -5,9 +5,9 @@ Puppet::Reports.register_report(:satellite) do
   desc 'Sends reports directly to Satellite'
 
   include Puppet::Util::Satellite
-
+  
+  # Check for report metrics
   def process
-    # check for report metrics
     raise(Puppet::ParseError, "Invalid report: can't find metrics information for #{host}") if metrics.nil?
 
     body = { 'report' => generate_report }

@@ -8,6 +8,7 @@ require 'json'
 
 # satellite.rb
 module Puppet::Util::Satellite
+  # Get satellite_pe_tools_settings
   def settings
     return @settings if @settings
     $settings_file = '/etc/puppetlabs/puppet/satellite_pe_tools.yaml' # rubocop:disable Style/GlobalVars
@@ -15,6 +16,7 @@ module Puppet::Util::Satellite
     @settings = YAML.load_file($settings_file) # rubocop:disable Style/GlobalVars
   end
 
+  # Create a request to verify satelite SSL identitiy
   def create_http
     @uri = URI.parse(satellite_url)
     http = Net::HTTP.new(@uri.host, @uri.port)
@@ -42,6 +44,7 @@ module Puppet::Util::Satellite
     http
   end
 
+  # Submit the identity verification request
   def submit_request(endpoint, body)
     http = create_http
     req = Net::HTTP::Post.new("#{@uri.path}#{endpoint}")
@@ -51,6 +54,7 @@ module Puppet::Util::Satellite
     http.request(req)
   end
 
+  # Generate verification report
   def generate_report
     report = {}
     set_report_format
