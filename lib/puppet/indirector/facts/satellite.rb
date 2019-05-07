@@ -8,6 +8,7 @@ class Puppet::Node::Facts::Satellite < Puppet::Node::Facts::Puppetdb
 
   include Puppet::Util::Satellite
 
+  # Submit facts to Satelite
   def save(request)
     begin
       request_body = { 'certname' => request.key,

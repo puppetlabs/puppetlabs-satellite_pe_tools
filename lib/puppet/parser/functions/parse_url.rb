@@ -1,8 +1,7 @@
 # parse_url.rb
 module Puppet::Parser::Functions
   newfunction(:parse_url, type: :rvalue, doc: <<-EOS
-      This function parses a given URL and provides a hash of
-      the parsed data.
+    @return  This function parses a given URL and provides a hash of the parsed data.
     EOS
              ) do |arguments|
 

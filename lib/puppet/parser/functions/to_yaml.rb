@@ -1,7 +1,7 @@
 # to_yaml.rb
 module Puppet::Parser::Functions
   newfunction(:to_yaml, type: :rvalue, doc: <<-EOS
-      This function takes a data structure and turns it into yaml
+    @return  This function takes a data structure and turns it into yaml
     EOS
              ) do |arguments|
 
