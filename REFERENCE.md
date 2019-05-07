@@ -17,14 +17,8 @@ to a Satellite server
 
 ### satellite_pe_tools
 
-=== Examples
-=== Authors
-
-Puppet <info@puppet.com>
-
-=== Copyright
-
-Copyright 2017 Puppet
+This module provides and configures a report processor to send puppet agent reports
+to a Satellite server
 
 #### Examples
 
