@@ -139,7 +139,7 @@ This example tells the master the location of the Satellite server (`https://pup
 
 ## Debugging
 
-In addition to looking through the usual reports in the Puppet Enterprise Console, also review the Satellite API log and the Puppetserver log.
+In addition to looking through the usual reports in the Puppet Enterprise console, also review the Satellite API log and the Puppet server log.
 
 The Satellite API log file is located at `/var/log/httpd/foreman-ssl_access_ssl.log` on your Satellite server.
 
@@ -155,7 +155,7 @@ An example of a sucessful SSL authentication (note the '201'):
 10.32.125.164 - - [03/Oct/2015:16:06:00 -0700] "POST /api/reports HTTP/1.1" 201 554 "-" "Ruby"
 ```
 
-The Puppetserver log file is located at `/var/log/puppetlabs/puppetserver/puppetserver.log` on your Puppet server. 
+The Puppet server log file is located at `/var/log/puppetlabs/puppetserver/puppetserver.log` on your Puppet server. 
 
 An example of a DH PARAMETER failure:
 
@@ -163,7 +163,7 @@ An example of a DH PARAMETER failure:
 2018-03-04 15:16:17,161 ERROR [qtp1111094392-103] [puppetserver] Puppet Could not send report to Satellite: Could not generate DH keypair
 ```
 
-The above error can be resolved by adding a DH PARAMETER block to the custom certificate on the Satellite server.
+You can resolve this error by adding a DH PARAMETER block to the custom certificate on the Satellite server.
 
 ```bash
 openssl dhparam 1024 >> /etc/pki/katello/certs/katello-apache.crt
