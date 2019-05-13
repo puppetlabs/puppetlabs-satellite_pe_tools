@@ -139,7 +139,7 @@ This example tells the master the location of the Satellite server (`https://pup
 
 ## Debugging
 
-In addition to looking through the usual reports in the Puppet Enterprise console, also review the Satellite API log and the Puppet server log.
+In addition to the reports in the Puppet Enterprise Console, the Satellite API log and the Puppet server log can help you debug issues.
 
 The Satellite API log file is located at `/var/log/httpd/foreman-ssl_access_ssl.log` on your Satellite server.
 
