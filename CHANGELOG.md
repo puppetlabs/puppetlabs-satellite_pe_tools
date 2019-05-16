@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v3.0.0](https://github.com/puppetlabs/puppetlabs-satellite_pe_tools/tree/v3.0.0) (2019-05-15)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-satellite_pe_tools/compare/2.3.0...v3.0.0)
+
+### Changed
+
+- pdksync - \(MODULES-8444\) - Raise lower Puppet bound [\#103](https://github.com/puppetlabs/puppetlabs-satellite_pe_tools/pull/103) ([david22swan](https://github.com/david22swan))
+
+### Added
+
+- \(FM-7937\) Implement Puppet Strings [\#107](https://github.com/puppetlabs/puppetlabs-satellite_pe_tools/pull/107) ([carabasdaniel](https://github.com/carabasdaniel))
+
 ## [2.3.0](https://github.com/puppetlabs/puppetlabs-satellite_pe_tools/tree/2.3.0) (2019-02-11)
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-satellite_pe_tools/compare/2.2.0...2.3.0)
