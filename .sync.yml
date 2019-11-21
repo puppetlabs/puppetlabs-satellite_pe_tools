@@ -5,7 +5,7 @@
   required:
   - "---.project"
 ".gitlab-ci.yml":
-  unmanaged: true
+  delete: true
 ".travis.yml":
   docker_sets: []
   docker_defaults:
