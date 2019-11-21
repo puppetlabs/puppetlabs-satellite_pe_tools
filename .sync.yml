@@ -2,8 +2,6 @@
 ".gitignore":
   paths:
   - katello-default-ca.crt
-  required:
-  - "---.project"
 ".gitlab-ci.yml":
   delete: true
 ".travis.yml":
