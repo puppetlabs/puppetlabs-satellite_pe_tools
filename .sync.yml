@@ -1,70 +1,56 @@
 ---
-.gitignore:
+".gitignore":
   paths:
-    - 'katello-default-ca.crt'
+  - katello-default-ca.crt
   required:
-    - ---.project
-
-.gitlab-ci.yml:
+  - "---.project"
+".gitlab-ci.yml":
   unmanaged: true
-
-.travis.yml:
+".travis.yml":
   docker_sets: []
   docker_defaults:
-    bundler_args: ""
-  secure: ""
+    bundler_args: ''
+  secure: ''
   branches:
-    - release
- 
-Gemfile:
-  required:
-    ':system_tests':
-      - gem: 'puppet-module-posix-system-r#{minor_version}'
-        platforms: ruby
-      - gem: 'puppet-module-win-system-r#{minor_version}'
-        platforms:
-          - mswin
-          - mingw
-          - x64_mingw
-      - gem: 'rest-client'
-  optional:
-    ':development':
-      - gem: 'github_changelog_generator'
-        git: 'https://github.com/skywinder/github-changelog-generator'
-        ref: '20ee04ba1234e9e83eb2ffb5056e23d641c7a018'
-        condition: "Gem::Version.new(RUBY_VERSION.dup) >= Gem::Version.new('2.2.2')"
-
+  - release
 appveyor.yml:
   delete: true
-
 CONTRIBUTING.md:
   unmanaged: true
-
+Gemfile:
+  required:
+    ":system_tests":
+    - gem: puppet-module-posix-system-r#{minor_version}
+      platforms: ruby
+    - gem: puppet-module-win-system-r#{minor_version}
+      platforms:
+      - mswin
+      - mingw
+      - x64_mingw
+    - gem: rest-client
+  optional:
+    ":development":
+    - gem: github_changelog_generator
+      git: https://github.com/skywinder/github-changelog-generator
+      ref: 20ee04ba1234e9e83eb2ffb5056e23d641c7a018
+      condition: Gem::Version.new(RUBY_VERSION.dup) >= Gem::Version.new('2.2.2')
 LICENSE:
-  license_type: 'puppetpe'
-
+  license_type: puppetpe
 NOTICE:
   unmanaged: true
-
-spec/acceptance/nodesets/default.yml:
-  unmanaged: true
-
 spec/acceptance/nodesets/centos-7-x64.yml:
   unmanaged: true
-
 spec/acceptance/nodesets/debian-8-x64.yml:
   unmanaged: true
-
+spec/acceptance/nodesets/default.yml:
+  unmanaged: true
 spec/acceptance/nodesets/docker/centos-7.yml:
   unmanaged: true
-
-spec/acceptance/nodesets/docker/ubuntu-14.04.yml:
-  unmanaged: true
-
 spec/acceptance/nodesets/docker/debian-8.yml:
   unmanaged: true
-
+spec/acceptance/nodesets/docker/ubuntu-14.04.yml:
+  unmanaged: true
 spec/spec_helper.rb:
   allow_deprecations: true
   coverage_report: true
-  mock_with: ':rspec'
+  mock_with: ":rspec"
