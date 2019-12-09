@@ -49,7 +49,7 @@ Data type: `Boolean`
 
 When set to false, allows the Satellite server to present an unsigned, unrecognized,
 or invalid SSL certificate. This creates the risk of a host falsifying its identity as the Satellite server.
-Valid values: true, false. Defaults to true.
+Valid values: true, false.
 
 Default value: `true`
 
@@ -84,7 +84,7 @@ Default value: ''
 Data type: `Boolean`
 
 Applicable to Red Hat-based systems only. When set to true, the module transfers the Satellite
-server's default CA certificate from the Satellite server to the master. This uses an untrusted SSL connection. Defaults to true.
+server's default CA certificate from the Satellite server to the master. This uses an untrusted SSL connection.
 
 Default value: `true`
 

@@ -2,7 +2,15 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
-## [v3.0.0](https://github.com/puppetlabs/puppetlabs-satellite_pe_tools/tree/v3.0.0) (2019-05-15)
+## [v3.1.0](https://github.com/puppetlabs/puppetlabs-satellite_pe_tools/tree/v3.1.0) (2019-12-09)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-satellite_pe_tools/compare/v3.0.0...v3.1.0)
+
+### Added
+
+- FM-8032 - add redhat8 support [\#112](https://github.com/puppetlabs/puppetlabs-satellite_pe_tools/pull/112) ([lionce](https://github.com/lionce))
+
+## [v3.0.0](https://github.com/puppetlabs/puppetlabs-satellite_pe_tools/tree/v3.0.0) (2019-05-16)
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-satellite_pe_tools/compare/2.3.0...v3.0.0)
 
