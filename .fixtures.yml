@@ -1,6 +1,9 @@
 fixtures:
   repositories:
-    "inifile": "https://github.com/puppetlabs/puppetlabs-inifile.git"
-    "stdlib": "https://github.com/puppetlabs/puppetlabs-stdlib.git"
+    facts: 'https://github.com/puppetlabs/puppetlabs-facts.git'
+    inifile: 'https://github.com/puppetlabs/puppetlabs-inifile.git'
+    provision: 'https://github.com/puppetlabs/provision.git'
+    puppet_agent: 'https://github.com/puppetlabs/puppetlabs-puppet_agent.git'
+    stdlib: 'https://github.com/puppetlabs/puppetlabs-stdlib.git'
   symlinks:
-    "satellite_pe_tools": "#{source_dir}"
+    satellite_pe_tools: "#{source_dir}"
