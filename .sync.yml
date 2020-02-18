@@ -23,16 +23,6 @@ appveyor.yml:
 CONTRIBUTING.md:
   unmanaged: true
 Gemfile:
-  required:
-    ":system_tests":
-    - gem: puppet-module-posix-system-r#{minor_version}
-      platforms: ruby
-    - gem: puppet-module-win-system-r#{minor_version}
-      platforms:
-      - mswin
-      - mingw
-      - x64_mingw
-    - gem: rest-client
   optional:
     ":development":
     - gem: github_changelog_generator
