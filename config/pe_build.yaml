@@ -15,5 +15,5 @@ pe_build:
 #     ---
 #     pe_build:
 #       version: "3.2.0-rc1-44-g538eaab"
-#       download_root: "http://enterprise.delivery.puppetlabs.net/3.2/ci-ready"
+#       download_root: "https://artifactory.delivery.puppetlabs.net/artifactory/generic_enterprise__local/2018.1/ci-ready/"
 #
