@@ -23,6 +23,12 @@ appveyor.yml:
 CONTRIBUTING.md:
   unmanaged: true
 Gemfile:
+  required:
+    ':development':
+      - gem: ed25519
+        version: '>= 1.2', '< 2.0'
+      - gem: bcrypt_pbkdf
+        version: '>= 1.0', '< 2.0'
   optional:
     ":development":
     - gem: github_changelog_generator
@@ -33,18 +39,16 @@ LICENSE:
   license_type: puppetpe
 NOTICE:
   unmanaged: true
-spec/acceptance/nodesets/centos-7-x64.yml:
-  unmanaged: true
-spec/acceptance/nodesets/debian-8-x64.yml:
-  unmanaged: true
-spec/acceptance/nodesets/default.yml:
-  unmanaged: true
-spec/acceptance/nodesets/docker/centos-7.yml:
-  unmanaged: true
-spec/acceptance/nodesets/docker/debian-8.yml:
-  unmanaged: true
-spec/acceptance/nodesets/docker/ubuntu-14.04.yml:
-  unmanaged: true
+Rakefile:
+  extras:
+    - |
+      require 'rspec/core/rake_task'
+      namespace :websphere_application_server do
+        RSpec::Core::RakeTask.new(:integration) do |t|
+          t.pattern = 'spec/acceptance/**{,/*/**}/*_spec.rb'
+          t.rspec_opts = "--tag integration"
+        end
+      end
 spec/spec_helper.rb:
   allow_deprecations: true
   coverage_report: true
