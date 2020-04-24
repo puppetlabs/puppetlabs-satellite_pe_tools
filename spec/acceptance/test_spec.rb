@@ -1,34 +1,25 @@
 require 'spec_helper_acceptance'
 
-# The following block is required due to differences in networking
-# setup as well as functionality in beaker between vagrant and vmpooler
-if default['hypervisor'] =~ %r{vagrant}
-  satellite_hostname = hosts_as('satellite').first.name
-  satellite_host = on('satellite', "cat /etc/hosts | grep #{satellite_hostname} | tail -1 | awk '{print $1}'").stdout.strip
-  master_host = 'master.vm'
-else
-  satellite_hostname = hosts_as('satellite').first.hostname
-  satellite_host = satellite_hostname
-  master_host = hosts_as('master').first.hostname
-end
-
 terminus_config = '/config/scripts/facts_terminus_config.sh'
 manifest_location = '/etc/puppetlabs/code/environments/production/manifests/site.pp'
 
-describe 'satellite_pe_tools tests' do
+describe 'satellite_pe_tools tests', :integration do
+  master_host = target_roles('pe')[0][:name]
+  satellite_host = target_roles('satellite')[0][:name]
   before(:all) do
-    satellite_update_setting('trusted_puppetmaster_hosts', Array(master_host))
-    run_script_on 'master', project_root + terminus_config
-    on 'master', 'service pe-puppetserver restart'
-    on 'master', 'puppet agent -t', acceptable_exit_codes: [0, 2]
+    satellite_update_setting(master_host, satellite_host, 'trusted_puppetmaster_hosts', Array(master_host))
+    Helper.instance.bolt_run_script("#{project_root}#{terminus_config}")
+    Helper.instance.run_shell('service pe-puppetserver restart')
+    # `puppet agent -t` returns a 2 for changes made which run_shell takes as a failure
+    Helper.instance.run_shell('puppet agent -t', expect_failures: true)
   end
 
-  context 'report tests' do
+  context 'reports' do
     it 'applies' do
       manifest_str = "cat <<EOF > #{manifest_location}
           node default {
             class {'satellite_pe_tools':
-              satellite_url => 'https://#{satellite_hostname}',
+              satellite_url => 'https://#{satellite_host}',
               verify_satellite_certificate => true,
               ssl_key  => '/etc/puppetlabs/puppet/ssl/satellite/#{master_host}-puppet-client.key',
               ssl_cert => '/etc/puppetlabs/puppet/ssl/satellite/#{master_host}-puppet-client.crt',
@@ -40,8 +31,9 @@ describe 'satellite_pe_tools tests' do
           }
 EOF"
 
-      on 'master', manifest_str
-      on 'master', 'puppet agent -t', acceptable_exit_codes: [0, 2]
+      Helper.instance.run_shell(manifest_str)
+      # `puppet agent -t` returns a 2 for changes made which run_shell takes as a failure
+      Helper.instance.run_shell('puppet agent -t', expect_failures: true)
     end
 
     it 'contains the report text in Satellite' do
@@ -49,12 +41,12 @@ EOF"
     end
   end
 
-  context 'facts tests' do
+  context 'facts' do
     it 'applies' do
       manifest_str = "cat <<EOF > #{manifest_location}
           node default {
             class {'satellite_pe_tools':
-              satellite_url => 'https://#{satellite_hostname}',
+              satellite_url => 'https://#{satellite_host}',
               verify_satellite_certificate => true,
               ssl_key  => '/etc/puppetlabs/puppet/ssl/satellite/#{master_host}-puppet-client.key',
               ssl_cert => '/etc/puppetlabs/puppet/ssl/satellite/#{master_host}-puppet-client.crt',
@@ -62,8 +54,9 @@ EOF"
           }
 EOF"
 
-      on 'master', manifest_str
-      on 'master', 'puppet agent -t', acceptable_exit_codes: [0, 2]
+      Helper.instance.run_shell(manifest_str)
+      # `puppet agent -t` returns a 2 for changes made which run_shell takes as a failure
+      Helper.instance.run_shell('puppet agent -t', expect_failures: true)
     end
 
     it 'contains the fact text in Satellite' do
