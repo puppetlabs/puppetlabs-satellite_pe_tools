@@ -25,3 +25,4 @@
 .project
 .envrc
 /inventory.yaml
+katello-default-ca.crt

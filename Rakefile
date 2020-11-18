@@ -92,3 +92,4 @@ namespace :satellite_pe_tools do
     t.rspec_opts = "--tag integration"
   end
 end
+

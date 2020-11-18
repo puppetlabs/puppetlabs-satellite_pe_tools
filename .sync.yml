@@ -23,12 +23,6 @@ appveyor.yml:
 CONTRIBUTING.md:
   unmanaged: true
 Gemfile:
-  required:
-    ':development':
-      - gem: ed25519
-        version: '>= 1.2', '< 2.0'
-      - gem: bcrypt_pbkdf
-        version: '>= 1.0', '< 2.0'
   optional:
     ":development":
     - gem: github_changelog_generator
@@ -43,7 +37,7 @@ Rakefile:
   extras:
     - |
       require 'rspec/core/rake_task'
-      namespace :websphere_application_server do
+      namespace :satellite_pe_tools do
         RSpec::Core::RakeTask.new(:integration) do |t|
           t.pattern = 'spec/acceptance/**{,/*/**}/*_spec.rb'
           t.rspec_opts = "--tag integration"
@@ -53,3 +47,7 @@ spec/spec_helper.rb:
   allow_deprecations: true
   coverage_report: true
   mock_with: ":rspec"
+.gitpod.Dockerfile:
+  unmanaged: false
+.gitpod.yml:
+  unmanaged: false
