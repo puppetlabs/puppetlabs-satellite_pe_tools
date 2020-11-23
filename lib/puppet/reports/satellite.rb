@@ -13,7 +13,7 @@ Puppet::Reports.register_report(:satellite) do
     body = { 'report' => generate_report }
 
     Puppet.info "Submitting report to #{satellite_url}"
-    submit_request '/api/reports', body
+    submit_request '/api/config_reports', body
   rescue StandardError => e
     Puppet.err "Could not send report to Satellite: #{e}\n#{e.backtrace}"
   end
