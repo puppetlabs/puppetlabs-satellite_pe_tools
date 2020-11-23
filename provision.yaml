@@ -1,2 +1,8 @@
 ---
 default:
+release_checks_7:
+  provisioner: abs
+  images:
+  - redhat-7-x86_64
+  - redhat-8-x86_64
+  - centos-7-x86_64
