@@ -125,7 +125,7 @@ module Puppet::Util::Satellite
       next if log.level == :debug
 
       # skipping catalog summary run messages, we dont want them in Foreman's db
-      next if log.message =~ %r{^Finished catalog run in \d+.\d+ seconds$}
+      next if %r{^Finished catalog run in \d+.\d+ seconds$}.match?(log.message)
 
       # Match Foreman's slightly odd API format...
       l = { 'log' => { 'sources' => {}, 'messages' => {} } }
