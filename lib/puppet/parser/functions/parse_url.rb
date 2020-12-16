@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # parse_url.rb
 module Puppet::Parser::Functions
   newfunction(:parse_url, type: :rvalue, doc: <<-EOS

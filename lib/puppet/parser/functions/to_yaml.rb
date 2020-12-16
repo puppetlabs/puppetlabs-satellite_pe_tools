@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # to_yaml.rb
 module Puppet::Parser::Functions
   newfunction(:to_yaml, type: :rvalue, doc: <<-EOS
