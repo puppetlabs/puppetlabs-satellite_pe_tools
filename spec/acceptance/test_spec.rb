@@ -6,10 +6,10 @@ terminus_config = '/config/scripts/facts_terminus_config.sh'
 manifest_location = '/etc/puppetlabs/code/environments/production/manifests/site.pp'
 
 describe 'satellite_pe_tools tests', :integration do
-  master_host = target_roles('pe')[0][:name]
+  server_host = target_roles('pe')[0][:name]
   satellite_host = target_roles('satellite')[0][:name]
   before(:all) do
-    satellite_update_setting(master_host, satellite_host, 'trusted_puppetmaster_hosts', Array(master_host))
+    satellite_update_setting(server_host, satellite_host, 'trusted_puppetmaster_hosts', Array(server_host))
     Helper.instance.bolt_run_script("#{project_root}#{terminus_config}")
     Helper.instance.run_shell('service pe-puppetserver restart')
     # `puppet agent -t` returns a 2 for changes made which run_shell takes as a failure
@@ -23,8 +23,8 @@ describe 'satellite_pe_tools tests', :integration do
             class {'satellite_pe_tools':
               satellite_url => 'https://#{satellite_host}',
               verify_satellite_certificate => true,
-              ssl_key  => '/etc/puppetlabs/puppet/ssl/satellite/#{master_host}-puppet-client.key',
-              ssl_cert => '/etc/puppetlabs/puppet/ssl/satellite/#{master_host}-puppet-client.crt',
+              ssl_key  => '/etc/puppetlabs/puppet/ssl/satellite/#{server_host}-puppet-client.key',
+              ssl_cert => '/etc/puppetlabs/puppet/ssl/satellite/#{server_host}-puppet-client.crt',
             }
 
             notify {'This is a test from Puppet to Satellite':
@@ -39,7 +39,7 @@ EOF"
     end
 
     it 'contains the report text in Satellite' do
-      expect(satellite_get_last_report(satellite_host, master_host).to_s).to match(%r{This is a test from Puppet to Satellite})
+      expect(satellite_get_last_report(satellite_host, server_host).to_s).to match(%r{This is a test from Puppet to Satellite})
     end
   end
 
@@ -50,8 +50,8 @@ EOF"
             class {'satellite_pe_tools':
               satellite_url => 'https://#{satellite_host}',
               verify_satellite_certificate => true,
-              ssl_key  => '/etc/puppetlabs/puppet/ssl/satellite/#{master_host}-puppet-client.key',
-              ssl_cert => '/etc/puppetlabs/puppet/ssl/satellite/#{master_host}-puppet-client.crt',
+              ssl_key  => '/etc/puppetlabs/puppet/ssl/satellite/#{server_host}-puppet-client.key',
+              ssl_cert => '/etc/puppetlabs/puppet/ssl/satellite/#{server_host}-puppet-client.crt',
             }
           }
 EOF"
@@ -62,7 +62,7 @@ EOF"
     end
 
     it 'contains the fact text in Satellite' do
-      expect(satellite_get_facts(satellite_host, master_host)['total']).not_to eq(0)
+      expect(satellite_get_facts(satellite_host, server_host)['total']).not_to eq(0)
     end
   end
 end

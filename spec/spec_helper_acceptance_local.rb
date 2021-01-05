@@ -16,12 +16,12 @@ RSpec.configure do |c|
 
   # Configure all nodes in nodeset
   c.before :suite do
-    # Defaults to the first master found
-    master = target_roles('pe')[0][:name]
+    # Defaults to the first server found
+    server = target_roles('pe')[0][:name]
     # Defaults to the first satellite found
     satellite = target_roles('satellite')[0][:name]
 
-    change_target_host(master)
+    change_target_host(server)
     # Make sure the VM is using our internal DNS servers
     Helper.instance.run_shell("sed -i 's/nameserver.*$/nameserver #{SUT_DNS_SERVER}/' /etc/resolv.conf")
     Helper.instance.run_shell('puppet module install puppetlabs-inifile')
@@ -30,8 +30,8 @@ RSpec.configure do |c|
     change_target_host(satellite)
     expand_satellite_disk(satellite) if get_provisioner(satellite) == 'vmpooler' # && satellite['disks']
     install_satellite(satellite)
-    change_target_host(master)
-    generate_and_transfer_satellite_cert_from_sat_to_pe(master, satellite)
+    change_target_host(server)
+    generate_and_transfer_satellite_cert_from_sat_to_pe(server, satellite)
   end
 end
 
@@ -87,29 +87,29 @@ def project_root
   File.expand_path(File.join(File.dirname(__FILE__), '..'))
 end
 
-def generate_and_transfer_satellite_cert_from_sat_to_pe(master, satellite)
+def generate_and_transfer_satellite_cert_from_sat_to_pe(server, satellite)
   # Swap host to satellite
   change_target_host(satellite)
 
-  Helper.instance.run_shell("capsule-certs-generate --capsule-fqdn #{master} --certs-tar \"~/#{master}-certs.tar\"")
+  Helper.instance.run_shell("capsule-certs-generate --capsule-fqdn #{server} --certs-tar \"~/#{server}-certs.tar\"")
   # Copy the SSL certs from Satellite to PE
   Helper.instance.run_shell('[ -d /tmp/ssl-build ] || mv /root/ssl-build /tmp')
   Helper.instance.run_shell('chmod -R 0755 /tmp/ssl-build')
 
-  scp_from(satellite, "/tmp/ssl-build/#{master}/#{master}-puppet-client.crt", project_root.to_s)
-  scp_from(satellite, "/tmp/ssl-build/#{master}/#{master}-puppet-client.key", project_root.to_s)
+  scp_from(satellite, "/tmp/ssl-build/#{server}/#{server}-puppet-client.crt", project_root.to_s)
+  scp_from(satellite, "/tmp/ssl-build/#{server}/#{server}-puppet-client.key", project_root.to_s)
 
-  # Swap host back to master
-  change_target_host(master)
+  # Swap host back to server
+  change_target_host(server)
 
-  Helper.instance.bolt_upload_file("#{project_root}/#{master}-puppet-client.crt", "/tmp/#{master}-puppet-client.crt")
-  Helper.instance.bolt_upload_file("#{project_root}/#{master}-puppet-client.key", "/tmp/#{master}-puppet-client.key")
+  Helper.instance.bolt_upload_file("#{project_root}/#{server}-puppet-client.crt", "/tmp/#{server}-puppet-client.crt")
+  Helper.instance.bolt_upload_file("#{project_root}/#{server}-puppet-client.key", "/tmp/#{server}-puppet-client.key")
 
   Helper.instance.run_shell('mkdir -p /etc/puppetlabs/puppet/ssl/satellite')
-  Helper.instance.run_shell("cp /tmp/#{master}-puppet-client.crt /etc/puppetlabs/puppet/ssl/satellite/#{master}-puppet-client.crt")
-  Helper.instance.run_shell("cp /tmp/#{master}-puppet-client.key /etc/puppetlabs/puppet/ssl/satellite/#{master}-puppet-client.key")
-  Helper.instance.run_shell("chown pe-puppet /etc/puppetlabs/puppet/ssl/satellite/#{master}-puppet-client.crt")
-  Helper.instance.run_shell("chown pe-puppet /etc/puppetlabs/puppet/ssl/satellite/#{master}-puppet-client.key")
+  Helper.instance.run_shell("cp /tmp/#{server}-puppet-client.crt /etc/puppetlabs/puppet/ssl/satellite/#{server}-puppet-client.crt")
+  Helper.instance.run_shell("cp /tmp/#{server}-puppet-client.key /etc/puppetlabs/puppet/ssl/satellite/#{server}-puppet-client.key")
+  Helper.instance.run_shell("chown pe-puppet /etc/puppetlabs/puppet/ssl/satellite/#{server}-puppet-client.crt")
+  Helper.instance.run_shell("chown pe-puppet /etc/puppetlabs/puppet/ssl/satellite/#{server}-puppet-client.key")
 end
 
 require 'net/ssh'
@@ -165,16 +165,16 @@ def satellite_get(ip, resource)
   end
 end
 
-def satellite_update_setting(master, satellite, setting, value)
+def satellite_update_setting(server, satellite, setting, value)
   change_target_host(satellite)
   Helper.instance.run_shell("hammer --username admin --password puppetlabs settings set --id '#{setting}' --value '#{value}'")
-  change_target_host(master)
+  change_target_host(server)
 end
 
-def satellite_get_last_report(satellite_host, master_host)
-  satellite_get(satellite_host, "hosts/#{master_host}/reports/last")
+def satellite_get_last_report(satellite_host, server_host)
+  satellite_get(satellite_host, "hosts/#{server_host}/reports/last")
 end
 
-def satellite_get_facts(satellite_host, master_host)
-  satellite_get(satellite_host, "hosts/#{master_host}/facts")
+def satellite_get_facts(satellite_host, server_host)
+  satellite_get(satellite_host, "hosts/#{server_host}/facts")
 end
