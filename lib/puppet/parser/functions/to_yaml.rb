@@ -1,10 +1,11 @@
+# frozen_string_literal: true
+
 # to_yaml.rb
 module Puppet::Parser::Functions
   newfunction(:to_yaml, type: :rvalue, doc: <<-EOS
     @return  This function takes a data structure and turns it into yaml
     EOS
-             ) do |arguments|
-
+  ) do |arguments|
     if arguments.size != 1
       raise(Puppet::ParseError, 'parseyaml(): Wrong number of arguments ' \
         "given #{arguments.size} for 1")

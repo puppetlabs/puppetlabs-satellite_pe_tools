@@ -1,10 +1,11 @@
+# frozen_string_literal: true
+
 # parse_url.rb
 module Puppet::Parser::Functions
   newfunction(:parse_url, type: :rvalue, doc: <<-EOS
     @return  This function parses a given URL and provides a hash of the parsed data.
     EOS
-             ) do |arguments|
-
+  ) do |arguments|
     if arguments.size != 1
       raise(Puppet::ParseError, 'parseyaml(): Wrong number of arguments ' \
         "given #{arguments.size} for 1")

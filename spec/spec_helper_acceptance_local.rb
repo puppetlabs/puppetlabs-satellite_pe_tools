@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'puppet_litmus'
 require 'singleton'
 
@@ -6,7 +8,7 @@ class Helper
   include PuppetLitmus
 end
 
-SUT_DNS_SERVER = '10.240.1.10'.freeze
+SUT_DNS_SERVER = '10.240.1.10'
 
 RSpec.configure do |c|
   # Readable test descriptions

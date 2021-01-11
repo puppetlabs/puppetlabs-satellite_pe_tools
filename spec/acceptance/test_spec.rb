@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper_acceptance'
 
 terminus_config = '/config/scripts/facts_terminus_config.sh'

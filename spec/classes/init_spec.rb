@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 describe 'satellite_pe_tools' do
   context 'with defaults for all parameters' do

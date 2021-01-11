@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'puppet'
 require 'puppet/util'
 require 'net/http'
@@ -94,7 +96,7 @@ module Puppet::Util::Satellite
 
     # special fix for false warning about skips
     # sometimes there are skip values, but there are no error messages, we ignore them.
-    if report_status['skipped'] > 0 && (report_status.values.inject(:+) - report_status['skipped'] == report.logs.size)
+    if report_status['skipped'] > 0 && (report_status.values.sum - report_status['skipped'] == report.logs.size)
       report_status['skipped'] = 0
     end
     # fix for reports that contain no metrics (i.e. failed catalog)
@@ -102,7 +104,7 @@ module Puppet::Util::Satellite
       report_status['failed'] += 1
     end
     # fix for Puppet non-resource errors (i.e. failed catalog fetches before falling back to cache)
-    report_status['failed'] += report.logs.select { |l| l.source =~ %r{Puppet$} && l.level.to_s == 'err' }.count
+    report_status['failed'] += report.logs.count { |l| l.source =~ %r{Puppet$} && l.level.to_s == 'err' }
 
     report_status
   end
@@ -111,7 +113,7 @@ module Puppet::Util::Satellite
     h = {}
     metrics.each do |_title, mtype|
       h[mtype.name] ||= {}
-      mtype.values.each { |m| h[mtype.name].merge!(m[0].to_s => m[2]) }
+      mtype.each_value { |m| h[mtype.name].merge!(m[0].to_s => m[2]) }
     end
     h
   end
@@ -123,7 +125,7 @@ module Puppet::Util::Satellite
       next if log.level == :debug
 
       # skipping catalog summary run messages, we dont want them in Foreman's db
-      next if log.message =~ %r{^Finished catalog run in \d+.\d+ seconds$}
+      next if %r{^Finished catalog run in \d+.\d+ seconds$}.match?(log.message)
 
       # Match Foreman's slightly odd API format...
       l = { 'log' => { 'sources' => {}, 'messages' => {} } }

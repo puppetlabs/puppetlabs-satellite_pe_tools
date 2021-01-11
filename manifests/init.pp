@@ -76,7 +76,7 @@ class satellite_pe_tools(
   if ($manage_default_ca_cert) and ($::osfamily == 'RedHat') {
     exec {'download_install_katello_cert_rpm':
       path    => ['/usr/bin', '/bin',],
-      command => "curl -k -o /tmp/katello-ca-consumer-latest.noarch.rpm ${satellite_url}/pub/katello-ca-consumer-latest.noarch.rpm && yum -y install /tmp/katello-ca-consumer-latest.noarch.rpm", # rubocop:disable Metrics/LineLength
+      command => "curl -k -o /tmp/katello-ca-consumer-latest.noarch.rpm ${satellite_url}/pub/katello-ca-consumer-latest.noarch.rpm && yum -y install /tmp/katello-ca-consumer-latest.noarch.rpm", # rubocop:disable Layout/LineLength
       creates => '/etc/rhsm/ca/katello-server-ca.pem',
     }
 
