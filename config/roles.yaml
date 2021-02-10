@@ -1,6 +1,6 @@
 ---
 roles:
-  master:
+  server:
     private_networks:
       - ip: '0.0.0.0'
         auto_network: true
@@ -15,7 +15,7 @@ roles:
         inline: "iptables -F"
       - type: hosts
       - type: pe_bootstrap
-        role: !ruby/sym master
+        role: !ruby/sym server
         autosign: true
   satellite:
     private_networks:
