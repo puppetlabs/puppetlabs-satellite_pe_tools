@@ -23,43 +23,43 @@ This module requires Red Hat Satellite 6.2 and Puppet Enterprise (PE) 2016.4 or 
 
 ### Beginning with satellite_pe_tools
 
-1. [Classify Puppet masters](#classify-puppet-masters)
-2. [Set Puppet master facts terminus](#set-puppet-master-facts-terminus)
-3. [Allow Puppet master to send data to Satellite](#allow-puppet–master-to-send-data-to-satellite)
-4. [Allow Puppet master to verify Satellite server identity](#allow-puppet-master-to-verify-satellite-server-identity)
-5. [Allow Satellite server to verify Puppet master identity](#allow-satellite-server-to-verify-puppet-master-identity)
+1. [Classify Puppet servers](#classify-puppet-servers)
+2. [Set Puppet server facts terminus](#set-puppet-server-facts-terminus)
+3. [Allow Puppet server to send data to Satellite](#allow-puppet–server-to-send-data-to-satellite)
+4. [Allow Puppet server to verify Satellite server identity](#allow-puppet-server-to-verify-satellite-server-identity)
+5. [Allow Satellite server to verify Puppet server identity](#allow-satellite-server-to-verify-puppet-server-identity)
 6. [Enable pluginsync and reports in Puppet](#enable-pluginsync-and-reports-in-puppet)
 
-To set up communication between Satellite and your Puppet masters, follow these steps:
+To set up communication between Satellite and your Puppet servers, follow these steps:
 
-1. Classify Puppet masters
+1. Classify Puppet servers
 
-   Add the `satellite_pe_tools` class to the PE master node group in the PE Console. For details on adding classes to node groups, see the [Puppet Enterprise documentation](https://docs.puppet.com/pe/latest/console_classes_groups.html#adding-classes-to-a-node-group).
+   Add the `satellite_pe_tools` class to the PE server node group in the PE Console. For details on adding classes to node groups, see the [Puppet Enterprise documentation](https://docs.puppet.com/pe/latest/console_classes_groups.html#adding-classes-to-a-node-group).
 
-2. Set Puppet master facts terminus
+2. Set Puppet server facts terminus
 
-   In the PE master node group in the PE Console, add the `facts_terminus`
-parameter to the `puppet_enterprise::profile::master` class with a string value of 'satellite'. This sets Puppet runs on your Puppet masters to forward the facts to Satellite.
+   In the PE server node group in the PE Console, add the `facts_terminus`
+parameter to the `puppet_enterprise::profile::server` class with a string value of 'satellite'. This sets Puppet runs on your Puppet servers to forward the facts to Satellite.
 
-3. Allow the Puppet master to verify the Satellite server's identity
+3. Allow the Puppet server to verify the Satellite server's identity
 
-   To use SSL verification so that the Puppet master can verify the Satellite server (to prevents man-in-the-middle attacks), the Certificate Authority (CA) certificate that signed the Satellite server's SSL certificate must be available on the Puppet master.
+   To use SSL verification so that the Puppet server can verify the Satellite server (to prevents man-in-the-middle attacks), the Certificate Authority (CA) certificate that signed the Satellite server's SSL certificate must be available on the Puppet server.
 
    By default, the CA certificate is located on the Satellite CA server. On Red Hat-based systems, this is automatically managed by the module. Note that the CA cert is transferred over an untrusted SSL connection. If you wish to transfer the cert manually, see below. You must also set the `manage_default_ca_cert` parameter to `false`.
 
-   On non-Red Hat systems, or if you wish to manually transfer the cert, copy the file `/etc/pki/katello/certs/katello-default-ca.crt` from the Satellite CA server to `/etc/puppetlabs/puppet/ssl/ca/katello-default-ca.crt` on each Puppet master. If you place the certificate in a different location or give it a different name, you must set the `ssl_ca` parameter for the `satellite_pe_tools` class to the file path of the CA certificate.
+   On non-Red Hat systems, or if you wish to manually transfer the cert, copy the file `/etc/pki/katello/certs/katello-default-ca.crt` from the Satellite CA server to `/etc/puppetlabs/puppet/ssl/ca/katello-default-ca.crt` on each Puppet server. If you place the certificate in a different location or give it a different name, you must set the `ssl_ca` parameter for the `satellite_pe_tools` class to the file path of the CA certificate.
 
-   If the Satellite SSL certificate is signed by a remote CA, copy the remote CA's certificate to each Puppet master, and then set the `ssl_ca` parameter for the `satellite_pe_tools` class to the file path of the CA certificate.
+   If the Satellite SSL certificate is signed by a remote CA, copy the remote CA's certificate to each Puppet server, and then set the `ssl_ca` parameter for the `satellite_pe_tools` class to the file path of the CA certificate.
 
    If you do not wish to verify the identity of the Satellite server, you can set the[`verify_satellite_certificate`](#verify_satellite_certificate) parameter for the `satellite_pe_tools` class to `false`.
 
-4. Allow the Satellite server to verify the Puppet master's identity
+4. Allow the Satellite server to verify the Puppet server's identity
 
-   By default, Satellite is configured to verify the SSL identity of the PE masters connecting to it. If the PE report processor and facts indirector are not using a certificate signed with the Satellite server's CA, the verification fails.
+   By default, Satellite is configured to verify the SSL identity of the PE servers connecting to it. If the PE report processor and facts indirector are not using a certificate signed with the Satellite server's CA, the verification fails.
 
-   To use SSL verification so that the Satellite server can verify the Puppet master, you must generate a SSL cert and key pair on the Satellite server, and then copy these files to your Puppet master.
+   To use SSL verification so that the Satellite server can verify the Puppet server, you must generate a SSL cert and key pair on the Satellite server, and then copy these files to your Puppet server.
 
-> Note: In the following steps, replace `puppet.example.com` with the FQDN of your Puppet master.
+> Note: In the following steps, replace `puppet.example.com` with the FQDN of your Puppet server.
 
 a. On the Satellite server, run the following command:
 
@@ -86,7 +86,7 @@ rpm2cpio puppet.example.com-puppet-client-1.0-1.noarch.rpm | cpio -idmv
 
 This creates a folder structure in the current directory beginning with `./etc/pki/katello-certs-tools/`
 
-d. Copy the `.crt` and `.key` files to your Puppet master, found either at:
+d. Copy the `.crt` and `.key` files to your Puppet server, found either at:
 
 `~/ssl-build/puppet.example.com/puppet.example.com-puppet-client.crt`
 
@@ -96,9 +96,9 @@ Or if you had to extract them from the RPM:
    `~/ssl-build/puppet.example.com/etc/pki/katello-certs-tools/certs/puppet.example.com-puppet-client.crt`
      `~/ssl-build/puppet.example.com/etc/pki/katello-certs-tools/private/puppet.example.com-puppet-client.key`
 
-Copy the files to `/etc/puppetlabs/puppet/ssl/satellite` (on PE >= 2015.x) or `/etc/puppet/ssl/satellite` (PE 3.x) on your master.
+Copy the files to `/etc/puppetlabs/puppet/ssl/satellite`.
 
-e. On your Puppet master, set the ownership of these two files to `pe-puppet`:
+e. On your Puppet server, set the ownership of these two files to `pe-puppet`:
 
 
 Example (adjust paths and filenames accordingly):
@@ -108,15 +108,15 @@ chown pe-puppet /etc/puppetlabs/puppet/ssl/satellite/puppet.example.com-puppet-c
 chown pe-puppet /etc/puppetlabs/puppet/ssl/satellite/puppet.example.com-puppet-client.key
 ```
 
-f. In the Satellite UI, go to *Administer -> Settings -> Auth* and set the `restrict_registered_puppetmasters` parameter to `true`. Additionally, add your Puppet master's FQDN to the `trusted_puppetmaster_hosts` array on the same page; for example, `[puppet.example.com]`.
+f. In the Satellite UI, go to *Administer -> Settings -> Auth* and set the `restrict_registered_smart_proxies` parameter to `true`. Additionally, add your Puppet server's FQDN to the `trusted_hosts` array on the same page; for example, `[puppet.example.com]`.
 
-On Satellite 6.2 (and since Foreman 1.8.0) the `restrict_registered_puppetmasters` setting has been renamed to `restrict_registered_smart_proxies` (labelled "Restrict registered capsules"). `trusted_puppetmaster_hosts` has been given the label "Trusted puppetmaster hosts" in the UX. You can see the actual setting names by mousing over the label.
+`trusted_hosts` has been given the label "Trusted hosts" in the UX. You can see the actual setting names by mousing over the label.
 
-g. Set the `ssl_cert` and `ssl_key` parameters in your `satellite_pe_tools` class to the location on your Puppet master of the two files respectively.
+g. Set the `ssl_cert` and `ssl_key` parameters in your `satellite_pe_tools` class to the location on your Puppet server of the two files respectively.
 
-If you do not want the Satellite server to verify the Puppet master identity, then in the Satellite UI, go to *Administer -> Settings -> Auth* and set the `restrict_registered_puppetmasters` parameter to `false`.
+If you do not want the Satellite server to verify the Puppet server identity, then in the Satellite UI, go to *Administer -> Settings -> Auth* and set the `restrict_registered_smart_proxies` parameter to `false`.
 
-Note that this setting presents a security risk. False reports and facts can be sent to Satellite by a malicious system masquerading as a current Puppet master on your infrastructure that's been added to Satellite as a safe master.
+Note that this setting presents a security risk. False reports and facts can be sent to Satellite by a malicious system masquerading as a current Puppet server on your infrastructure that's been added to Satellite as a safe server.
 
 5. Enable pluginsync and reports in Puppet
 
@@ -135,7 +135,7 @@ class {'satellite_pe_tools':
 }
 ~~~
 
-This example tells the master the location of the Satellite server (`https://puppet.example.com`) and instructs it to verify the Satellite server's identity.
+This example tells the Puppet server the location of the Satellite server (`https://puppet.example.com`) and instructs it to verify the Satellite server's identity.
 
 ## Debugging
 
@@ -167,17 +167,17 @@ You can resolve this error by adding a DH PARAMETER block to the custom certific
 
 ```bash
 openssl dhparam 1024 >> /etc/pki/katello/certs/katello-apache.crt
-katello-service restart
+satellite-maintain restart
 ```
 
 ## Reference
-For information on the classes and types, see the [REFERENCE.md](https://github.com/puppetlabs/puppetlabs-satellite_pe_tools/blob/master/REFERENCE.md)
+For information on the classes and types, see the [REFERENCE.md](https://github.com/puppetlabs/puppetlabs-satellite_pe_tools/blob/main/REFERENCE.md)
 
 ## Limitations
 
 The `satellite_pe_tools` module requires Red Hat Satellite 6.2 and Puppet Enterprise 2016.4 or later. 
 
-For an extensive list of supported operating systems, see [metadata.json](https://github.com/puppetlabs/puppetlabs-satellite_pe_tools/blob/master/metadata.json)
+For an extensive list of supported operating systems, see [metadata.json](https://github.com/puppetlabs/puppetlabs-satellite_pe_tools/blob/main/metadata.json)
 
 ## Development
 

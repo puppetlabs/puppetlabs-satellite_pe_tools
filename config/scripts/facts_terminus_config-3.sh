@@ -12,7 +12,7 @@ find_guid()
   echo $(curl $NC_CURL_OPT --insecure https://localhost:4433/classifier-api/v1/groups| python -m json.tool |grep -C 2 "$1" | grep "id" | cut -d: -f2 | sed 's/[\", ]//g')
 }
 
-read -r -d '' PE_MASTER_POST << MASTER_JSON
+read -r -d '' PE_SERVER_POST << SERVER_JSON
 {
   "classes": {
     "pe_repo": { },
@@ -33,7 +33,7 @@ read -r -d '' PE_MASTER_POST << MASTER_JSON
   ],
   "variables": {}
 }
-MASTER_JSON
+SERVER_JSON
 
-curl -X POST -H 'Content-Type: application/json' -d "$PE_MASTER_POST" $NC_CURL_OPT --insecure https://localhost:4433/classifier-api/v1/groups/$(find_guid 'PE Master')
+curl -X POST -H 'Content-Type: application/json' -d "$PE_SERVER_POST" $NC_CURL_OPT --insecure https://localhost:4433/classifier-api/v1/groups/$(find_guid 'PE Master')
 
