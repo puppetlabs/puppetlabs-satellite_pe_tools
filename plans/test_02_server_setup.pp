@@ -5,12 +5,6 @@ plan satellite_pe_tools::test_02_server_setup(
   # install pe server
   run_task('provision::install_pe', $server)
 
-  # install satellite module
-  run_command('puppet module install puppetlabs-satellite_pe_tools', $server)
-
-  # update site on server
-  $manifest = 'include satellite_pe_tools'
-
   # set the ui password
   run_command('puppet infra console_password --password=litmus', $server)
 }
