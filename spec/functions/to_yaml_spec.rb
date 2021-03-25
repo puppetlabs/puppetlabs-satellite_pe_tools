@@ -4,11 +4,7 @@ require 'spec_helper'
 
 describe 'to_yaml' do
   let(:arg_error) do
-    if Puppet::Util::Package.versioncmp(Puppet.version, '6.0.0') < 0
-      [ArgumentError, 'expects']
-    else
-      [Puppet::ParseError, 'Wrong number of arguments']
-    end
+    [ArgumentError, 'expects']
   end
 
   it { is_expected.not_to eq(nil) }
