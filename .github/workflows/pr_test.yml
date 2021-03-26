@@ -1,0 +1,50 @@
+name: "Acceptance Test"
+
+on: [pull_request]
+
+jobs:
+  Acceptance:
+    runs-on: ubuntu-20.04
+    steps:
+    - name: Checkout Source
+      uses: actions/checkout@v2
+
+    - name: Activate Ruby 2.7
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: "2.7"
+        bundler-cache: true
+
+    - name: Create the fixtures directory
+      run: |
+        echo ::group::Create the fixtures directory
+        bundle install
+        bundle exec rake spec_prep
+        echo ::endgroup::
+
+    - name: Provision environment
+      run: |
+        bundle exec bolt --modulepath spec/fixtures/modules plan run satellite_pe_tools::provision_machines
+        echo ::group::=== INVENTORY ===
+        sed -e 's/password: .*/password: "[redacted]"/' < inventory.yaml || true
+        echo ::endgroup::
+
+    - name: Puppet server setup
+      run: |
+        bundle exec bolt --modulepath spec/fixtures/modules plan run satellite_pe_tools::puppetserver_setup -i ./inventory.yaml
+
+    - name: Install agent
+      uses: nick-invision/retry@v1
+      with:
+        timeout_minutes: 30
+        max_attempts: 5
+        retry_wait_seconds: 60
+        command: bundle exec rake 'litmus:install_agent[puppet7-nightly]'
+
+    - name: Install module
+      run: |
+        bundle exec rake 'litmus:install_module'
+
+    - name: Run Test
+      run: |
+        bundle exec bolt --modulepath spec/fixtures/modules plan run satellite_pe_tools::test_run -i ./inventory.yaml
