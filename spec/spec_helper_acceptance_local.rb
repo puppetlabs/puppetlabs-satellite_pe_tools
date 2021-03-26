@@ -79,7 +79,7 @@ end
 def install_satellite(host)
   Helper.instance.run_shell("grep #{host} /etc/hosts || sed -i 's/satellite/#{host} satellite/' /etc/hosts")
   Helper.instance.run_shell("sed -i 's/nameserver.*$/nameserver #{SUT_DNS_SERVER}/' /etc/resolv.conf") if get_provisioner(host) == 'vmpooler'
-  Helper.instance.bolt_run_script("#{project_root}/config/scripts/redhat_repo.sh")
+  Helper.instance.bolt_run_script("#{project_root}/config/scripts/redhat_repo.sh") if get_provisioner(host) == 'vmpooler'
   Helper.instance.bolt_run_script("#{project_root}/config/scripts/install_satellite.sh")
 end
 
@@ -108,8 +108,8 @@ def generate_and_transfer_satellite_cert_from_sat_to_pe(server, satellite)
   Helper.instance.run_shell('mkdir -p /etc/puppetlabs/puppet/ssl/satellite')
   Helper.instance.run_shell("cp /tmp/#{server}-puppet-client.crt /etc/puppetlabs/puppet/ssl/satellite/#{server}-puppet-client.crt")
   Helper.instance.run_shell("cp /tmp/#{server}-puppet-client.key /etc/puppetlabs/puppet/ssl/satellite/#{server}-puppet-client.key")
-  Helper.instance.run_shell("chown pe-puppet /etc/puppetlabs/puppet/ssl/satellite/#{server}-puppet-client.crt")
-  Helper.instance.run_shell("chown pe-puppet /etc/puppetlabs/puppet/ssl/satellite/#{server}-puppet-client.key")
+  Helper.instance.run_shell("chown root /etc/puppetlabs/puppet/ssl/satellite/#{server}-puppet-client.crt")
+  Helper.instance.run_shell("chown root /etc/puppetlabs/puppet/ssl/satellite/#{server}-puppet-client.key")
 end
 
 require 'net/ssh'
