@@ -42,7 +42,7 @@ jobs:
         timeout_minutes: 30
         max_attempts: 5
         retry_wait_seconds: 60
-        command: bundle exec rake 'litmus:install_agent[puppet7-nightly]'
+        command: bundle exec bolt --modulepath spec/fixtures/modules plan run satellite_pe_tools::agents_setup -i ./inventory.yaml
 
     - name: Install module
       run: |

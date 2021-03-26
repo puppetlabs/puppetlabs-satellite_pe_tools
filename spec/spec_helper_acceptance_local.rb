@@ -17,7 +17,7 @@ RSpec.configure do |c|
   # Configure all nodes in nodeset
   c.before :suite do
     # Defaults to the first server found
-    server = target_roles('pe')[0][:name]
+    server = target_roles('ps')[0][:name]
     # Defaults to the first satellite found
     satellite = target_roles('satellite')[0][:name]
 
