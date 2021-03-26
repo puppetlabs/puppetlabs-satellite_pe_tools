@@ -1,4 +1,4 @@
-plan kubernetes::puppetserver_setup(
+plan satellite_pe_tools::puppetserver_setup(
 ) {
   $puppet_server =  get_targets('*').filter |$n| { $n.vars['role'] == 'ps' }
   $puppet_server_string = $puppet_server[0].name
