@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v4.0.1](https://github.com/puppetlabs/puppetlabs-satellite_pe_tools/tree/v4.0.1) (2021-03-27)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-satellite_pe_tools/compare/v4.0.0...v4.0.1)
+
+### Fixed
+
+- Fix "Could not send report to Satellite: undefined method `each\_value' for Puppet::Util::Metric" [\#160](https://github.com/puppetlabs/puppetlabs-satellite_pe_tools/pull/160) ([DavidS](https://github.com/DavidS))
+
 ## [v4.0.0](https://github.com/puppetlabs/puppetlabs-satellite_pe_tools/tree/v4.0.0) (2021-02-27)
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-satellite_pe_tools/compare/v3.1.0...v4.0.0)
