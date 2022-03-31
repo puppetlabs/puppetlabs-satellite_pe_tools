@@ -29,6 +29,8 @@ class Satellite
   attr_reader :config
 
   def initialize
+    raise("Required configuration file #{CONFIG_FILE} does not exist!") unless File.exist?(CONFIG_FILE)
+
     @config = YAML.load_file(CONFIG_FILE).transform_keys { |key| key.to_sym }
 
     # Any of these conditions can cause this command not to be configured,
