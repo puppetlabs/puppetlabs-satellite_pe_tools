@@ -1,0 +1,106 @@
+#!/opt/puppetlabs/puppet/bin/ruby
+
+# This script returns Satellite's ENC data for a single host.
+# It is intended to be run as a Puppet "trusted external command".
+#
+# Suggested location:
+#   /etc/puppetlabs/puppet/trusted-external-commands/satellite
+#
+# Config file:
+#   /etc/puppetlabs/puppet/satellite.yaml
+#
+# Config options:
+#   @param url The URL to use to reach the Satellite server
+#   @param ssl_ca File path to SSL CA pem file
+#   @param ssl_cert File path to client SSL cert
+#   @param ssl_key File path to cllient SSL key
+#   @param timeout Maximum response wait time, in seconds
+#   @param
+
+require 'yaml'
+require 'net/http'
+require 'timeout'
+require 'json'
+
+class Satellite
+
+  CONFIG_FILE = '/etc/puppetlabs/puppet/satellite_pe_tools.yaml'
+
+  attr_reader :config
+
+  def initialize
+    @config = YAML.load_file(CONFIG_FILE).transform_keys { |key| key.to_sym }
+
+    # Any of these conditions can cause this command not to be configured,
+    # which would mean it returns only the key configured=false.
+    @configured = ( !config[:ssl_cert].nil? &&
+                    !config[:ssl_key].nil? &&
+                    !config[:ssl_ca].nil? &&
+                    File.exist?(config[:ssl_cert]) &&
+                    File.exist?(config[:ssl_key]) &&
+                    File.exist?(config[:ssl_ca]) )
+  end
+
+  def nodedata(certname)
+    return { 'configured' => false }.to_json unless @configured
+
+    Timeout.timeout(timeout) do
+      YAML.load(get(certname)).to_json
+    end
+  rescue TimeoutError => e
+    raise "Timed out trying to retreive node data for #{certname}: #{e}"
+  end
+
+  def url
+    config[:url] || raise("Must provide URL in #{CONFIG_FILE}")
+  end
+
+  def timeout
+    config[:timeout] || 10
+  end
+
+  private
+
+  def get(certname)
+    uri = URI.parse("#{url}/node/#{certname}?format=yml")
+    req = Net::HTTP::Get.new(uri.request_uri)
+    connection(uri).start do |conn|
+      response = conn.request(req)
+      case response
+      when Net::HTTPNotFound
+        '{}'
+      when Net::HTTPOK
+        response.body
+      else
+        raise "Error retrieving node data for #{certname}: #{response.class}"
+      end
+    end 
+  end
+
+  def connection(uri)
+    conn = Net::HTTP.new(uri.host, uri.port)
+    conn.open_timeout = config[:timeout]
+    conn.read_timeout = config[:timeout]
+    conn.use_ssl = true if uri.scheme == 'https'
+    if conn.use_ssl?
+      conn.cert = OpenSSL::X509::Certificate.new(File.read(config[:ssl_cert])) unless config[:ssl_cert].nil?
+      conn.key = OpenSSL::PKey::RSA.new(File.read(config[:ssl_key])) unless config[:ssl_key].nil?
+      conn.ca_file = config[:ssl_ca] unless config[:ssl_ca].nil?
+      conn.verify_mode = conn.ca_file.nil? ? OpenSSL::SSL::VERIFY_NONE : OpenSSL::SSL::VERIFY_PEER
+    end
+
+    conn
+  end
+end
+
+if __FILE__ == $0 then
+  raise 'Must provide certname as an argument' unless certname = ARGV[0]
+  satellite = Satellite.new
+  begin
+    puts satellite.nodedata(certname)
+  rescue StandardError => e
+    STDERR.puts "Error: #{e.message}"
+    STDERR.puts e.backtrace
+    exit 1
+  end
+end
