@@ -28,6 +28,7 @@
     {
       "operatingsystem": "CentOS",
       "operatingsystemrelease": [
+        "Stream8",
         "7"
       ]
     }
