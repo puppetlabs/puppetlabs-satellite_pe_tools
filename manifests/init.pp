@@ -28,12 +28,12 @@
 #
 class satellite_pe_tools(
   String  $satellite_url,
-  Boolean $verify_satellite_certificate = true,
-  String  $ssl_ca                       = '',
-  String  $ssl_cert                     = '',
-  String  $ssl_key                      = '',
-  Boolean $manage_default_ca_cert       = true,
-  Boolean $trusted_external_command     = false,
+  Boolean $verify_satellite_certificate    = true,
+  String  $ssl_ca                          = '',
+  String  $ssl_cert                        = '',
+  String  $ssl_key                         = '',
+  Boolean $manage_default_ca_cert          = true,
+  Boolean $manage_trusted_external_command = false,
 ) {
 
   $parsed_hash = parse_url($satellite_url)
@@ -71,8 +71,8 @@ class satellite_pe_tools(
     ensure  => file,
     path    => '/etc/puppetlabs/puppet/satellite_pe_tools.yaml',
     content => to_yaml($satellite_config),
-    owner   => pe-puppet,
-    group   => pe-puppet,
+    owner   => 'root',
+    group   => 'root',
     mode    => '0644',
     notify  => Service['pe-puppetserver'],
   }
@@ -92,11 +92,11 @@ class satellite_pe_tools(
     }
   }
 
-  if $trusted_external_command {
+  if $manage_trusted_external_command {
     file { '/etc/puppetlabs/puppet/trusted-external-commands':
       ensure  => directory,
-      owner   => 'pe-puppet',
-      group   => 'pe-puppet',
+      owner   => 'root',
+      group   => 'root',
       mode    => '0755',
     }
 
@@ -111,8 +111,8 @@ class satellite_pe_tools(
 
     file { '/etc/puppetlabs/puppet/trusted-external-commands/satellite':
       ensure  => file,
-      owner   => 'pe-puppet',
-      group   => 'pe-puppet',
+      owner   => 'root',
+      group   => 'root',
       mode    => '0755',
       source  => 'puppet:///modules/satellite_pe_tools/satellite',
       require => File['satellite_config_yaml'],

@@ -15,7 +15,6 @@
 #   @param ssl_cert File path to client SSL cert
 #   @param ssl_key File path to cllient SSL key
 #   @param timeout Maximum response wait time, in seconds
-#   @param
 
 require 'yaml'
 require 'net/http'
