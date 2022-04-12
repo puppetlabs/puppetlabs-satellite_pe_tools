@@ -2,7 +2,7 @@
 
 if ! [ -d /opt/satellite ]; then
   mkdir -p /mnt/iso
-  # Replace below line with command in acceptance_local to copy files over
+  # Replaced with plan that runs after module install
   # curl https://artifactory.delivery.puppetlabs.net/artifactory/list/generic/module_ci_resources/carl/satellite-6.2.7-rhel-7-x86_64-dvd.iso > /tmp/satellite-6.2.7-rhel-7-x86_64-dvd.iso
   mount /tmp/satellite-6.2.7-rhel-7-x86_64-dvd.iso -o loop /mnt/iso
   

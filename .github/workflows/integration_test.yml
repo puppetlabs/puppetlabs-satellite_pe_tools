@@ -138,13 +138,15 @@ jobs:
       - name: Install server
         run: |
           buildevents cmd $TRACE_ID $STEP_ID 'rake satellite_pe_tools::acceptance::pe_server' -- bundle exec bolt --modulepath spec/fixtures/modules plan run satellite_pe_tools::acceptance::pe_server version='${{ matrix.version }}' -i ./$INVENTORY_PATH
-      # Included so the follow install module line does not error
       - name: Install agent
         run: |
           buildevents cmd $TRACE_ID $STEP_ID 'rake litmus:install_agent ${{ matrix.collection }}' -- bundle exec rake 'litmus:install_agent[${{ matrix.collection }}]'
       - name: Install module
         run: |
           buildevents cmd $TRACE_ID $STEP_ID 'rake litmus:install_module' -- bundle exec rake 'litmus:install_module'
+      - name: Extract files
+        run: |
+          buildevents cmd $TRACE_ID $STEP_ID 'rake satellite_pe_tools::acceptance::get_files' -- bundle exec bolt --modulepath spec/fixtures/modules plan run satellite_pe_tools::acceptance::get_files -i ./inventory.yaml
       - name: "Honeycomb: Record deployment times"
         if: ${{ always() }}
         run: |

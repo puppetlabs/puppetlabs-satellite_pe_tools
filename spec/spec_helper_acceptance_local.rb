@@ -24,6 +24,7 @@ RSpec.configure do |c|
 
     change_target_host(server)
     # Make sure the VM is using our internal DNS servers
+    ## Setting the DNS server in this way causes the code to error out on GCP
     # Helper.instance.run_shell("sed -i 's/nameserver.*$/nameserver #{SUT_DNS_SERVER}/' /etc/resolv.conf")
     Helper.instance.run_shell('puppet module install puppetlabs-inifile')
     Helper.instance.run_shell('puppet resource package subscription-manager ensure=installed')
@@ -79,10 +80,10 @@ end
 
 def install_satellite(host)
   Helper.instance.run_shell("grep #{host} /etc/hosts || sed -i 's/satellite/#{host} satellite/' /etc/hosts")
+  ## Setting the DNS server in this way causes the code to error out on GCP
   # Helper.instance.run_shell("sed -i 's/nameserver.*$/nameserver #{SUT_DNS_SERVER}/' /etc/resolv.conf")
+  ## Without the DNS being set we are unable to access `http://osmirror.delivery.puppetlabs.net`
   # Helper.instance.bolt_run_script("#{project_root}/config/scripts/redhat_repo.sh")
-  # Copy satellite installation files from the GCP cloud storage
-  Helper.instance.run_shell("gsutil cp -r gs://artifactory-modules/#{SATELLITE_INSTALL_FILES} /tmp/#{SATELLITE_INSTALL_FILES}")
   Helper.instance.bolt_run_script("#{project_root}/config/scripts/install_satellite.sh")
 end
 
