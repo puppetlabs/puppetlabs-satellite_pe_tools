@@ -9,15 +9,22 @@ class Helper
 end
 
 SUT_DNS_SERVER = '10.240.1.10'
+SATELLITE_INSTALL_FILES = 'satellite-6.2.7-rhel-7-x86_64-dvd.iso'
 
 RSpec.configure do |c|
+  if c.filter.rules.key? :integration
+    ENV['TARGET_HOST'] = target_roles('server')[0][:name]
+  else
+    c.filter_run_excluding :integration
+  end
+
   # Readable test descriptions
   c.formatter = :documentation
 
   # Configure all nodes in nodeset
   c.before :suite do
     # Defaults to the first server found
-    server = target_roles('pe')[0][:name]
+    server = target_roles('server')[0][:name]
     # Defaults to the first satellite found
     satellite = target_roles('satellite')[0][:name]
 
@@ -80,6 +87,8 @@ def install_satellite(host)
   Helper.instance.run_shell("grep #{host} /etc/hosts || sed -i 's/satellite/#{host} satellite/' /etc/hosts")
   Helper.instance.run_shell("sed -i 's/nameserver.*$/nameserver #{SUT_DNS_SERVER}/' /etc/resolv.conf")
   Helper.instance.bolt_run_script("#{project_root}/config/scripts/redhat_repo.sh")
+  # Copy satellite installation files from the GCP cloud storage
+  Helper.instance.run_shell("gsutil cp -r gs://artifactory-modules/#{SATELLITE_INSTALL_FILES} /tmp/#{SATELLITE_INSTALL_FILES}")
   Helper.instance.bolt_run_script("#{project_root}/config/scripts/install_satellite.sh")
 end
 

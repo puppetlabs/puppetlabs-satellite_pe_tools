@@ -1,0 +1,53 @@
+3 processes for 3 specs, ~ 1 spec per process
+Run options: exclude {:bolt=>true}
+
+satellite_pe_tools
+  with defaults for all parameters
+Run options: exclude {:bolt=>true}
+
+parse_url
+Run options: exclude {:bolt=>true}
+
+to_yaml
+  is expected not to eq nil
+  is expected not to eq nil
+  is expected to run parse_url() and raise an Puppet::ParseError with the message matching /Wrong number of arguments/
+  is expected to run to_yaml() and raise an ArgumentError with the message matching /expects/
+  is expected to run parse_url("") and return {"hostname"=>nil, "password"=>nil, "path"=>"", "port"=>nil, "query"=>nil, "user"=>nil}
+  is expected to run to_yaml(1, 2) and raise an ArgumentError with the message matching /expects/
+  is expected to run parse_url("https://satellite.local/somewhere?value=1") and return {"hostname"=>"satellite.local", "password"=>nil, "path"=>"/somewhere", "port"=>443, "query"=>"value=1", "user"=>nil}
+  is expected to run to_yaml("") and return "--- ''\n"
+
+Finished in 0.4339 seconds (files took 2.93 seconds to load)
+4 examples, 0 failures
+
+  is expected to run to_yaml([{"name"=>"bob", "details"=>{"age"=>247, "height"=>476}}]) and return "---\n- name: bob\n  details:\n    age: 247\n    height: 476\n"
+    is expected to contain Class[satellite_pe_tools]
+
+Finished in 0.89476 seconds (files took 2.92 seconds to load)
+1 example, 0 failures
+
+
+Code coverage
+  must cover at least 0% of resources
+
+
+Coverage Report:
+
+Total resources:   4
+Touched resources: 0
+Resource coverage:  0.00%
+
+Untouched resources:
+  Exec[download_install_katello_cert_rpm]
+  File[/etc/puppetlabs/puppet/ssl/ca/katello-default-ca.crt]
+  File[satellite_config_yaml]
+  Ini_subsetting[reports_satellite]
+
+Finished in 1.54 seconds (files took 2.93 seconds to load)
+6 examples, 0 failures
+
+
+11 examples, 0 failures
+
+Took 5 seconds
