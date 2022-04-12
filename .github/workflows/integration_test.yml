@@ -25,6 +25,7 @@ jobs:
         run: |
           echo STEP_ID=setup-environment >> $GITHUB_ENV
           echo STEP_START=$(date +%s) >> $GITHUB_ENV
+
       - name: Checkout Source
         uses: actions/checkout@v2
         if: ${{ github.repository_owner == 'puppetlabs' }}
@@ -42,12 +43,14 @@ jobs:
           echo ::group::bundler environment
           buildevents cmd $TRACE_ID $STEP_ID 'bundle env' -- bundle env
           echo ::endgroup::
+
       - name: "Honeycomb: Record Setup Environment time"
         if: ${{ github.repository_owner == 'puppetlabs' }}
         run: |
           buildevents step $TRACE_ID $STEP_ID $STEP_START 'Setup Environment'
           echo STEP_ID=Setup-Integration-Test-Matrix >> $GITHUB_ENV
           echo STEP_START=$(date +%s) >> $GITHUB_ENV
+
       - name: Setup Integration Test Matrix
         id: get-matrix
         run: |
@@ -56,10 +59,12 @@ jobs:
           else
             echo  "::set-output name=matrix::{}"
           fi
+
       - name: "Honeycomb: Record Setup Test Matrix time"
         if: ${{ always() }}
         run: |
           buildevents step $TRACE_ID $STEP_ID $STEP_START 'Setup Test Matrix'
+
   Integration:
     needs:
       - setup_matrix
@@ -104,17 +109,20 @@ jobs:
           echo ::group::bundler environment
           buildevents cmd $TRACE_ID $STEP_ID 'bundle env' -- bundle env
           echo ::endgroup::
+
       - name: Create the fixtures directory
         run: |
           echo ::group::Create the fixtures directory
           buildevents cmd $TRACE_ID $STEP_ID 'bundle exec rake spec_prep' -- bundle exec rake spec_prep
           echo ::endgroup::
+
       - name: "Honeycomb: Record Setup Environment time"
         if: ${{ always() }}
         run: |
           buildevents step $TRACE_ID $STEP_ID $STEP_START 'Setup Environment'
           echo STEP_ID=${{ matrix.platform }}-${{ matrix.version }}-2 >> $GITHUB_ENV
           echo STEP_START=$(date +%s) >> $GITHUB_ENV
+
       - name: Provision test environment
         run: |
           echo ::group::=== PLANS ===
@@ -135,28 +143,19 @@ jobs:
           sed -e 's/password: .*/password: "[redacted]"/' < $FILE || true
           echo ::endgroup::
           echo INVENTORY_PATH=$FILE >> $GITHUB_ENV
-      - name: Install server
-        run: |
-          buildevents cmd $TRACE_ID $STEP_ID 'rake satellite_pe_tools::acceptance::pe_server' -- bundle exec bolt --modulepath spec/fixtures/modules plan run satellite_pe_tools::acceptance::pe_server version='${{ matrix.version }}' -i ./$INVENTORY_PATH
-      # - name: Install agent
-      #   run: |
-      #     bundle exec bolt --modulepath spec/fixtures/modules plan run websphere_application_server::agents_setup collection='${{ matrix.collection }}' -i ./$INVENTORY_PATH
-      #     rc=$?
-      #     if test $rc -ne 0; then
-      #       attempt_number=0
-      #       while test $attempt_number -lt 0; do
-      #         bundle exec bolt --modulepath spec/fixtures/modules plan run websphere_application_server::agents_setup collection='${{ matrix.collection }}' -i ./$INVENTORY_PATH
-      #         rc=$?
-      #         if test $rc -eq 0; then
-      #           break
-      #         fi
-      #         sleep 2s
-      #         ((attempt_number=attempt_number+1))
-      #       done
-      #     fi
+
+    - name: Install server
+      run: |
+        buildevents cmd $TRACE_ID $STEP_ID 'rake satellite_pe_tools::acceptance::pe_server' -- bundle exec bolt --modulepath spec/fixtures/modules plan run satellite_pe_tools::acceptance::pe_server version='${{ matrix.version }}' -i ./$INVENTORY_PATH
+
+    - name: Install agent
+      run: |
+        buildevents cmd $TRACE_ID $STEP_ID 'rake litmus:install_agent ${{ matrix.collection }}' -- bundle exec rake 'litmus:install_agent[${{ matrix.collection }}]'
+
       - name: Install module
         run: |
           buildevents cmd $TRACE_ID $STEP_ID 'rake litmus:install_module' -- bundle exec rake 'litmus:install_module'
+
       - name: "Honeycomb: Record deployment times"
         if: ${{ always() }}
         run: |
@@ -165,15 +164,18 @@ jobs:
           echo STEP_ID=${{ matrix.platform }}-${{ matrix.version }}-3 >> $GITHUB_ENV
           echo STEP_START=$(date +%s) >> $GITHUB_ENV
           echo ::endgroup::
+
       - name: Run integration tests
         run: |
           buildevents cmd $TRACE_ID $STEP_ID 'rake satellite_pe_tools:integration' -- bundle exec rake satellite_pe_tools:integration
+
       - name: "Honeycomb: Record integration testing times"
         if: ${{ always() }}
         run: |
           buildevents step $TRACE_ID $STEP_ID $STEP_START 'Run integration tests'
           echo STEP_ID=${{ matrix.platform }}-${{ matrix.version }}-4 >> $GITHUB_ENV
           echo STEP_START=$(date +%s) >> $GITHUB_ENV
+
       - name: Remove test environment
         if: ${{ always() }}
         continue-on-error: true
@@ -185,6 +187,7 @@ jobs:
             echo
             echo ::endgroup::
           fi
+
       - name: "Honeycomb: Record removal times"
         if: ${{ always() }}
         run: |
