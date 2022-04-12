@@ -84,6 +84,8 @@ def install_satellite(host)
   # Helper.instance.run_shell("sed -i 's/nameserver.*$/nameserver #{SUT_DNS_SERVER}/' /etc/resolv.conf")
   ## Without the DNS being set we are unable to access `http://osmirror.delivery.puppetlabs.net`
   # Helper.instance.bolt_run_script("#{project_root}/config/scripts/redhat_repo.sh")
+  # Copy satellite installation files from the GCP cloud storage
+  Helper.instance.run_shell("gsutil cp -r gs://artifactory-modules/#{SATELLITE_INSTALL_FILES} /tmp/#{SATELLITE_INSTALL_FILES}")
   Helper.instance.bolt_run_script("#{project_root}/config/scripts/install_satellite.sh")
 end
 

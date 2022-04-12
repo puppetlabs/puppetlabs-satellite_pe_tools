@@ -144,9 +144,9 @@ jobs:
       - name: Install module
         run: |
           buildevents cmd $TRACE_ID $STEP_ID 'rake litmus:install_module' -- bundle exec rake 'litmus:install_module'
-      - name: Satellite files
-        run: |
-          buildevents cmd $TRACE_ID $STEP_ID 'rake satellite_pe_tools::acceptance::get_files' -- bundle exec bolt --modulepath spec/fixtures/modules plan run satellite_pe_tools::acceptance::get_files -i ./$INVENTORY_PATH
+      # - name: Satellite files
+      #   run: |
+      #     buildevents cmd $TRACE_ID $STEP_ID 'rake satellite_pe_tools::acceptance::get_files' -- bundle exec bolt --modulepath spec/fixtures/modules plan run satellite_pe_tools::acceptance::get_files -i ./$INVENTORY_PATH
       - name: "Honeycomb: Record deployment times"
         if: ${{ always() }}
         run: |
