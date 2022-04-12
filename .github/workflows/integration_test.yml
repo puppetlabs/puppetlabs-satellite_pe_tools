@@ -118,7 +118,7 @@ jobs:
       - name: Provision test environment
         run: |
           echo ::group::=== PLANS ===
-          bundle exec bolt plan show
+          bundle exec bolt --modulepath spec/fixtures/modules plan show
           echo ::endgroup::
 
           buildevents cmd $TRACE_ID $STEP_ID 'rake satellite_pe_tools::acceptance::provision_integration' -- bundle exec bolt --modulepath spec/fixtures/modules plan run satellite_pe_tools::acceptance::provision_machines using='provision_service' image='${{ matrix.platform }}'
