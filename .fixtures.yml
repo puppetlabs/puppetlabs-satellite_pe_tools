@@ -5,5 +5,6 @@ fixtures:
     provision: 'https://github.com/puppetlabs/provision.git'
     puppet_agent: 'https://github.com/puppetlabs/puppetlabs-puppet_agent.git'
     stdlib: 'https://github.com/puppetlabs/puppetlabs-stdlib.git'
+    deploy_pe: "https://github.com/jarretlavallee/puppet-deploy_pe"
   symlinks:
     satellite_pe_tools: "#{source_dir}"
