@@ -12,12 +12,6 @@ SUT_DNS_SERVER = '10.240.1.10'
 SATELLITE_INSTALL_FILES = 'satellite-6.2.7-rhel-7-x86_64-dvd.iso'
 
 RSpec.configure do |c|
-  if c.filter.rules.key? :integration
-    ENV['TARGET_HOST'] = target_roles('server')[0][:name]
-  else
-    c.filter_run_excluding :integration
-  end
-
   # Readable test descriptions
   c.formatter = :documentation
 
