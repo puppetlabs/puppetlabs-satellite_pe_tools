@@ -138,6 +138,7 @@ jobs:
       - name: Install server
         run: |
           buildevents cmd $TRACE_ID $STEP_ID 'rake satellite_pe_tools::acceptance::pe_server' -- bundle exec bolt --modulepath spec/fixtures/modules plan run satellite_pe_tools::acceptance::pe_server version='${{ matrix.version }}' -i ./$INVENTORY_PATH
+      # Included so the follow install module line does not error
       - name: Install agent
         run: |
           buildevents cmd $TRACE_ID $STEP_ID 'rake litmus:install_agent ${{ matrix.collection }}' -- bundle exec rake 'litmus:install_agent[${{ matrix.collection }}]'
