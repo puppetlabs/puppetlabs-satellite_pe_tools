@@ -25,8 +25,9 @@ RSpec.configure do |c|
     change_target_host(server)
     # Make sure the VM is using our internal DNS servers
     Helper.instance.run_shell("sed -i 's/nameserver.*$/nameserver #{SUT_DNS_SERVER}/' /etc/resolv.conf")
-    sleep(60)
+    sleep(10)
     Helper.instance.run_shell('puppet module install puppetlabs-inifile')
+    sleep(10)
     Helper.instance.run_shell('puppet resource package subscription-manager ensure=installed')
 
     change_target_host(satellite)
