@@ -52,7 +52,7 @@ jobs:
         id: get-matrix
         run: |
           if [ '${{ github.repository_owner }}' == 'puppetlabs' ]; then
-            echo  "::set-output name=matrix::{'platform':['centos-7'],'collection':['puppet6-nightly', 'puppet7-nightly']}"
+            echo  "::set-output name=matrix::{'platform':['centos-7'],'version':['2019.8.5']}"
           else
             echo  "::set-output name=matrix::{}"
           fi
@@ -77,18 +77,18 @@ jobs:
     steps:
       - run: |
           echo 'platform=${{ matrix.platform }}' >> $BUILDEVENT_FILE
-          echo 'collection=${{ matrix.collection }}' >> $BUILDEVENT_FILE
+          echo 'version=${{ matrix.version }}' >> $BUILDEVENT_FILE
       - name: "Honeycomb: Start recording"
         uses: puppetlabs/kvrhdn-gha-buildevents@pdk-templates-v1
         with:
           apikey: ${{ env.HONEYCOMB_WRITEKEY }}
           dataset: ${{ env.HONEYCOMB_DATASET }}
           job-status: ${{ job.status }}
-          matrix-key: ${{ matrix.platform }}-${{ matrix.collection }}
+          matrix-key: ${{ matrix.platform }}-${{ matrix.version }}
 
       - name: "Honeycomb: start first step"
         run: |
-          echo STEP_ID=${{ matrix.platform }}-${{ matrix.collection }}-1 >> $GITHUB_ENV
+          echo STEP_ID=${{ matrix.platform }}-${{ matrix.version }}-1 >> $GITHUB_ENV
           echo STEP_START=$(date +%s) >> $GITHUB_ENV
       - name: Checkout Source
         uses: actions/checkout@v2
@@ -113,7 +113,7 @@ jobs:
         if: ${{ always() }}
         run: |
           buildevents step $TRACE_ID $STEP_ID $STEP_START 'Setup Environment'
-          echo STEP_ID=${{ matrix.platform }}-${{ matrix.collection }}-2 >> $GITHUB_ENV
+          echo STEP_ID=${{ matrix.platform }}-${{ matrix.version }}-2 >> $GITHUB_ENV
           echo STEP_START=$(date +%s) >> $GITHUB_ENV
       - name: Provision test environment
         run: |
@@ -137,7 +137,7 @@ jobs:
           echo INVENTORY_PATH=$FILE >> $GITHUB_ENV
       - name: Install server
         run: |
-          buildevents cmd $TRACE_ID $STEP_ID 'rake satellite_pe_tools::acceptance::pe_server' -- bundle exec bolt --modulepath spec/fixtures/modules plan run satellite_pe_tools::acceptance::pe_server collection='${{ matrix.collection }}' -i ./$INVENTORY_PATH
+          buildevents cmd $TRACE_ID $STEP_ID 'rake satellite_pe_tools::acceptance::pe_server' -- bundle exec bolt --modulepath spec/fixtures/modules plan run satellite_pe_tools::acceptance::pe_server version='${{ matrix.version }}' -i ./$INVENTORY_PATH
       # - name: Install agent
       #   run: |
       #     bundle exec bolt --modulepath spec/fixtures/modules plan run websphere_application_server::agents_setup collection='${{ matrix.collection }}' -i ./$INVENTORY_PATH
@@ -162,7 +162,7 @@ jobs:
         run: |
           echo ::group::honeycomb step
           buildevents step $TRACE_ID $STEP_ID $STEP_START 'Deploy test system'
-          echo STEP_ID=${{ matrix.platform }}-${{ matrix.collection }}-3 >> $GITHUB_ENV
+          echo STEP_ID=${{ matrix.platform }}-${{ matrix.version }}-3 >> $GITHUB_ENV
           echo STEP_START=$(date +%s) >> $GITHUB_ENV
           echo ::endgroup::
       - name: Run integration tests
@@ -172,7 +172,7 @@ jobs:
         if: ${{ always() }}
         run: |
           buildevents step $TRACE_ID $STEP_ID $STEP_START 'Run integration tests'
-          echo STEP_ID=${{ matrix.platform }}-${{ matrix.collection }}-4 >> $GITHUB_ENV
+          echo STEP_ID=${{ matrix.platform }}-${{ matrix.version }}-4 >> $GITHUB_ENV
           echo STEP_START=$(date +%s) >> $GITHUB_ENV
       - name: Remove test environment
         if: ${{ always() }}
