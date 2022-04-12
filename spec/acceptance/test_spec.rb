@@ -6,7 +6,7 @@ terminus_config = '/config/scripts/facts_terminus_config.sh'
 manifest_location = '/etc/puppetlabs/code/environments/production/manifests/site.pp'
 
 describe 'satellite_pe_tools tests', :integration do
-  server_host = target_roles('pe')[0][:name]
+  server_host = target_roles('server')[0][:name]
   satellite_host = target_roles('satellite')[0][:name]
   before(:all) do
     satellite_update_setting(server_host, satellite_host, 'trusted_puppetmaster_hosts', Array(server_host))
