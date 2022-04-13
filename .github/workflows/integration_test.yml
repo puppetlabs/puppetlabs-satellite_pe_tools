@@ -92,12 +92,11 @@ jobs:
           echo STEP_START=$(date +%s) >> $GITHUB_ENV
       - name: Checkout Source
         uses: actions/checkout@v2
-
-    - id: 'auth'
-      name: 'Authenticate to Google Cloud'
-      uses: 'google-github-actions/auth@v0'
-      with:
-        credentials_json: '${{ secrets.GOOGLE_CREDENTIALS }}'
+      - id: 'auth'
+        name: 'Authenticate to Google Cloud'
+        uses: 'google-github-actions/auth@v0'
+        with:
+          credentials_json: '${{ secrets.GOOGLE_CREDENTIALS }}'
 
       - name: Activate Ruby 2.7
         uses: ruby/setup-ruby@v1
