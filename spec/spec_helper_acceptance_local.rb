@@ -9,6 +9,7 @@ class Helper
 end
 
 SUT_DNS_SERVER = '10.240.1.10'
+SATELLITE_INSTALL_FILES = 'satellite-6.2.7-rhel-7-x86_64-dvd.iso'
 
 RSpec.configure do |c|
   # Readable test descriptions
@@ -17,13 +18,14 @@ RSpec.configure do |c|
   # Configure all nodes in nodeset
   c.before :suite do
     # Defaults to the first server found
-    server = target_roles('pe')[0][:name]
+    server = target_roles('server')[0][:name]
     # Defaults to the first satellite found
     satellite = target_roles('satellite')[0][:name]
 
     change_target_host(server)
     # Make sure the VM is using our internal DNS servers
-    Helper.instance.run_shell("sed -i 's/nameserver.*$/nameserver #{SUT_DNS_SERVER}/' /etc/resolv.conf")
+    ## Setting the DNS server in this way causes the code to error out on GCP
+    # Helper.instance.run_shell("sed -i 's/nameserver.*$/nameserver #{SUT_DNS_SERVER}/' /etc/resolv.conf")
     Helper.instance.run_shell('puppet module install puppetlabs-inifile')
     Helper.instance.run_shell('puppet resource package subscription-manager ensure=installed')
 
@@ -78,8 +80,21 @@ end
 
 def install_satellite(host)
   Helper.instance.run_shell("grep #{host} /etc/hosts || sed -i 's/satellite/#{host} satellite/' /etc/hosts")
-  Helper.instance.run_shell("sed -i 's/nameserver.*$/nameserver #{SUT_DNS_SERVER}/' /etc/resolv.conf")
-  Helper.instance.bolt_run_script("#{project_root}/config/scripts/redhat_repo.sh")
+  # if ENV['GITHUB_ACTIONS'] == 'true'
+    ## Setting the DNS server in this way causes the code to error out on GCP
+    # Helper.instance.run_shell("sed -i 's/nameserver.*$/nameserver #{SUT_DNS_SERVER}/' /etc/resolv.conf")
+    ## Without the DNS being set we are unable to access `http://osmirror.delivery.puppetlabs.net`
+    # Helper.instance.bolt_run_script("#{project_root}/config/scripts/redhat_repo.sh")
+    # Copy satellite installation files from the GCP cloud storage
+    Helper.instance.run_shell("gsutil cp -r gs://artifactory-modules/#{SATELLITE_INSTALL_FILES} /tmp/#{SATELLITE_INSTALL_FILES}")
+  # else
+  if ENV['GITHUB_ACTIONS'] != 'true'
+    Helper.instance.run_shell("sed -i 's/nameserver.*$/nameserver #{SUT_DNS_SERVER}/' /etc/resolv.conf")
+    # Without the DNS being set we are unable to access `http://osmirror.delivery.puppetlabs.net`
+    Helper.instance.bolt_run_script("#{project_root}/config/scripts/redhat_repo.sh")
+    # Copy install files from artifactory for internal testing
+    Helper.instance.run_shell("curl https://artifactory.delivery.puppetlabs.net/artifactory/list/generic/module_ci_resources/carl/#{SATELLITE_INSTALL_FILES} > /tmp/#{SATELLITE_INSTALL_FILES}")
+  end
   Helper.instance.bolt_run_script("#{project_root}/config/scripts/install_satellite.sh")
 end
 
