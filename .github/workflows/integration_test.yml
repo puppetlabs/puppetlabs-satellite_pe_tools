@@ -134,10 +134,11 @@ jobs:
       - name: Install server
         run: |
           buildevents cmd $TRACE_ID $STEP_ID 'rake satellite_pe_tools::acceptance::pe_server' -- bundle exec bolt --modulepath spec/fixtures/modules plan run satellite_pe_tools::acceptance::pe_server version='${{ matrix.version }}' -i ./$INVENTORY_PATH
-      - name: Install agent
-        run: |
-          buildevents cmd $TRACE_ID $STEP_ID 'rake satellite_pe_tools::acceptance::pe_agent' -- bundle exec bolt --modulepath spec/fixtures/modules plan run satellite_pe_tools::acceptance::pe_agent -i ./$INVENTORY_PATH
+      # - name: Install agent
+      #   run: |
+      #     buildevents cmd $TRACE_ID $STEP_ID 'rake satellite_pe_tools::acceptance::pe_agent' -- bundle exec bolt --modulepath spec/fixtures/modules plan run satellite_pe_tools::acceptance::pe_agent -i ./$INVENTORY_PATH
       - name: Install module
+        continue-on-error: true
         run: |
           buildevents cmd $TRACE_ID $STEP_ID 'rake litmus:install_module' -- bundle exec rake 'litmus:install_module'
 
