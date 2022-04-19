@@ -80,22 +80,28 @@ end
 
 def install_satellite(host)
   Helper.instance.run_shell("grep #{host} /etc/hosts || sed -i 's/satellite/#{host} satellite/' /etc/hosts")
-  # if ENV['GITHUB_ACTIONS'] == 'true'
+  if ENV['GITHUB_ACTIONS'] == 'true'
     ## Setting the DNS server in this way causes the code to error out on GCP
     # Helper.instance.run_shell("sed -i 's/nameserver.*$/nameserver #{SUT_DNS_SERVER}/' /etc/resolv.conf")
     ## Without the DNS being set we are unable to access `http://osmirror.delivery.puppetlabs.net`
     # Helper.instance.bolt_run_script("#{project_root}/config/scripts/redhat_repo.sh")
     # Copy satellite installation files from the GCP cloud storage
     Helper.instance.run_shell("gsutil cp -r gs://artifactory-modules/#{SATELLITE_INSTALL_FILES} /tmp/#{SATELLITE_INSTALL_FILES}")
-  # else
-  if ENV['GITHUB_ACTIONS'] != 'true'
+    
+    Helper.instance.run_shell('mkdir -p /mnt/iso')
+    Helper.instance.run_shell('mount /tmp/satellite-6.2.7-rhel-7-x86_64-dvd.iso -o loop /mnt/is')
+    Helper.instance.run_shell('/mnt/iso/install_packages')
+    Helper.instance.run_shell('satellite-installer --scenario satellite  --foreman-admin-password "puppetlabs"')
+    # `puppet agent -t` returns a 2 for changes made which run_shell takes as a failure
+    Helper.instance.run_shell('puppet agent -t', expect_failures: true)
+  else
     Helper.instance.run_shell("sed -i 's/nameserver.*$/nameserver #{SUT_DNS_SERVER}/' /etc/resolv.conf")
     # Without the DNS being set we are unable to access `http://osmirror.delivery.puppetlabs.net`
     Helper.instance.bolt_run_script("#{project_root}/config/scripts/redhat_repo.sh")
     # Copy install files from artifactory for internal testing
     Helper.instance.run_shell("curl https://artifactory.delivery.puppetlabs.net/artifactory/list/generic/module_ci_resources/carl/#{SATELLITE_INSTALL_FILES} > /tmp/#{SATELLITE_INSTALL_FILES}")
+    Helper.instance.bolt_run_script("#{project_root}/config/scripts/install_satellite.sh")
   end
-  Helper.instance.bolt_run_script("#{project_root}/config/scripts/install_satellite.sh")
 end
 
 def project_root
