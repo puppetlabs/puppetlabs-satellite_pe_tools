@@ -23,7 +23,7 @@
 # @param manage_default_ca_cert Applicable to Red Hat-based systems only. When set to true, the module transfers the Satellite 
 #   server's default CA certificate from the Satellite server to the server. This uses an untrusted SSL connection. 
 #
-class satellite_pe_tools(
+class satellite_pe_tools (
   String  $satellite_url,
   Boolean $verify_satellite_certificate = true,
   String  $ssl_ca                       = '',
@@ -31,7 +31,6 @@ class satellite_pe_tools(
   String  $ssl_key                      = '',
   Boolean $manage_default_ca_cert       = true,
 ) {
-
   $parsed_hash = parse_url($satellite_url)
   $satellite_hostname = $parsed_hash['hostname']
 
@@ -74,7 +73,7 @@ class satellite_pe_tools(
   }
 
   if ($manage_default_ca_cert) and ($::osfamily == 'RedHat') {
-    exec {'download_install_katello_cert_rpm':
+    exec { 'download_install_katello_cert_rpm':
       path    => ['/usr/bin', '/bin',],
       command => "curl -k -o /tmp/katello-ca-consumer-latest.noarch.rpm ${satellite_url}/pub/katello-ca-consumer-latest.noarch.rpm && yum -y install /tmp/katello-ca-consumer-latest.noarch.rpm", # rubocop:disable Layout/LineLength
       creates => '/etc/rhsm/ca/katello-server-ca.pem',
