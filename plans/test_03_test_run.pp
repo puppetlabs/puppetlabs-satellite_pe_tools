@@ -6,4 +6,5 @@ plan satellite_pe_tools::test_03_test_run(
   $server.each |$sut| {
     # pass the hostname as the sut, as the task is run locally.
     run_task('provision::run_tests', 'localhost', sut => $sut.name)
-  }}
+  }
+}
