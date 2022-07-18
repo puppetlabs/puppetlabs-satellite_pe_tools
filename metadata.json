@@ -1,6 +1,6 @@
 {
   "name": "puppetlabs-satellite_pe_tools",
-  "version": "4.0.1",
+  "version": "4.0.2",
   "author": "puppetlabs",
   "summary": "Configures reports and inventory data to be sent to Satellite 6",
   "license": "proprietary",

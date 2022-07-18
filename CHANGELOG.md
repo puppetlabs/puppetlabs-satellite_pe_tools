@@ -2,7 +2,16 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
-## [v4.0.1](https://github.com/puppetlabs/puppetlabs-satellite_pe_tools/tree/v4.0.1) (2021-03-27)
+## [v4.0.2](https://github.com/puppetlabs/puppetlabs-satellite_pe_tools/tree/v4.0.2) (2022-07-18)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-satellite_pe_tools/compare/v4.0.1...v4.0.2)
+
+### Fixed
+
+- \(MAINT\) Bump stdlib version [\#187](https://github.com/puppetlabs/puppetlabs-satellite_pe_tools/pull/187) ([chelnak](https://github.com/chelnak))
+- report processor: load utils via absolute path [\#180](https://github.com/puppetlabs/puppetlabs-satellite_pe_tools/pull/180) ([bastelfreak](https://github.com/bastelfreak))
+
+## [v4.0.1](https://github.com/puppetlabs/puppetlabs-satellite_pe_tools/tree/v4.0.1) (2021-03-29)
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-satellite_pe_tools/compare/v4.0.0...v4.0.1)
 
