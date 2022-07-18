@@ -4,7 +4,7 @@ require 'spec_helper'
 
 describe 'to_yaml' do
   let(:arg_error) do
-    [ArgumentError, 'expects']
+    [Puppet::ParseError, 'Wrong number of arguments']
   end
 
   it { is_expected.not_to eq(nil) }
