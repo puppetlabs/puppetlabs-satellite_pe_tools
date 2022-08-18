@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v4.1.0](https://github.com/puppetlabs/puppetlabs-satellite_pe_tools/tree/v4.1.0) (2022-08-18)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-satellite_pe_tools/compare/v4.0.2...v4.1.0)
+
+### Added
+
+- \(maint\) Raise upper bound of stdlib [\#189](https://github.com/puppetlabs/puppetlabs-satellite_pe_tools/pull/189) ([david22swan](https://github.com/david22swan))
+
 ## [v4.0.2](https://github.com/puppetlabs/puppetlabs-satellite_pe_tools/tree/v4.0.2) (2022-07-18)
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-satellite_pe_tools/compare/v4.0.1...v4.0.2)
