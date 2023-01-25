@@ -24,18 +24,18 @@
 #   server's default CA certificate from the Satellite server to the server. This uses an untrusted SSL connection. 
 #
 class satellite_pe_tools (
-  String  $satellite_url,
-  Boolean $verify_satellite_certificate = true,
-  String  $ssl_ca                       = '',
-  String  $ssl_cert                     = '',
-  String  $ssl_key                      = '',
-  Boolean $manage_default_ca_cert       = true,
+  String              $satellite_url,
+  Boolean             $verify_satellite_certificate = true,
+  Optional[String[1]] $ssl_ca                       = undef,
+  Optional[String[1]] $ssl_cert                     = undef,
+  Optional[String[1]] $ssl_key                      = undef,
+  Boolean             $manage_default_ca_cert       = true,
 ) {
   $parsed_hash = parse_url($satellite_url)
   $satellite_hostname = $parsed_hash['hostname']
 
   if $verify_satellite_certificate {
-    if $ssl_ca != '' {
+    if $ssl_ca {
       $ssl_ca_real = $ssl_ca
     } else {
       $ssl_ca_real = '/etc/puppetlabs/puppet/ssl/ca/katello-default-ca.crt'
@@ -53,7 +53,7 @@ class satellite_pe_tools (
 
   ini_subsetting { 'reports_satellite' :
     ensure               => present,
-    path                 => "${::settings::confdir}/puppet.conf",
+    path                 => "${settings::confdir}/puppet.conf",
     section              => 'master',
     setting              => 'reports',
     subsetting           => 'satellite',
@@ -72,7 +72,7 @@ class satellite_pe_tools (
     notify  => Service['pe-puppetserver'],
   }
 
-  if ($manage_default_ca_cert) and ($::osfamily == 'RedHat') {
+  if ($manage_default_ca_cert) and ($facts['os']['family'] == 'RedHat') {
     exec { 'download_install_katello_cert_rpm':
       path    => ['/usr/bin', '/bin',],
       command => "curl -k -o /tmp/katello-ca-consumer-latest.noarch.rpm ${satellite_url}/pub/katello-ca-consumer-latest.noarch.rpm && yum -y install /tmp/katello-ca-consumer-latest.noarch.rpm", # rubocop:disable Layout/LineLength
