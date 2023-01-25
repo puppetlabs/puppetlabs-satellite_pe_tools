@@ -26,10 +26,6 @@ Rakefile:
           t.rspec_opts = "--tag integration"
         end
       end
-  extra_disabled_lint_checks:
-    - legacy_facts
-    - top_scope_facts
-    - params_empty_string_assignment
 spec/spec_helper.rb:
   allow_deprecations: true
   coverage_report: true
