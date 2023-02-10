@@ -2,9 +2,25 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v4.1.0](https://github.com/puppetlabs/puppetlabs-satellite_pe_tools/tree/v4.1.0) (2023-02-10)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-satellite_pe_tools/compare/v4.0.2...v4.1.0)
+
+### Added
+
+- \(maint\) Raise upper bound of stdlib [\#189](https://github.com/puppetlabs/puppetlabs-satellite_pe_tools/pull/189) ([david22swan](https://github.com/david22swan))
+
+### Fixed
+
+- \(CONT-364\) Syntax update [\#196](https://github.com/puppetlabs/puppetlabs-satellite_pe_tools/pull/196) ([LukasAud](https://github.com/LukasAud))
+
 ## [v4.0.2](https://github.com/puppetlabs/puppetlabs-satellite_pe_tools/tree/v4.0.2) (2022-07-18)
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-satellite_pe_tools/compare/v4.0.1...v4.0.2)
+
+### Changed
+
+- pdksync - Remove Puppet 5 from testing and bump minimal version to 6.0.0 [\#149](https://github.com/puppetlabs/puppetlabs-satellite_pe_tools/pull/149) ([carabasdaniel](https://github.com/carabasdaniel))
 
 ### Fixed
 
@@ -22,10 +38,6 @@ All notable changes to this project will be documented in this file. The format 
 ## [v4.0.0](https://github.com/puppetlabs/puppetlabs-satellite_pe_tools/tree/v4.0.0) (2021-02-27)
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-satellite_pe_tools/compare/v3.1.0...v4.0.0)
-
-### Changed
-
-- pdksync - Remove Puppet 5 from testing and bump minimal version to 6.0.0 [\#149](https://github.com/puppetlabs/puppetlabs-satellite_pe_tools/pull/149) ([carabasdaniel](https://github.com/carabasdaniel))
 
 ### Added
 
