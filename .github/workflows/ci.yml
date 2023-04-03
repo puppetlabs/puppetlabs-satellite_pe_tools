@@ -13,21 +13,15 @@ jobs:
 
   Acceptance:
     needs: "Spec"
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
     - uses: actions/checkout@v1
-
-    - name: Activate Ruby 2.7
-      uses: ruby/setup-ruby@v1
-      with:
-        ruby-version: "2.7"
-        bundler-cache: true
-
     - name: Build
       run: |
         gem install bundler
         bundle install --path .bundle/gems --jobs 4 --retry 3
         bundle exec rake spec_prep
+
     - name: Prepare inventory file
       run: |
         cat <<EOF >> inventory.yaml
@@ -41,20 +35,25 @@ jobs:
         - name: winrm_nodes
           targets: []
         EOF
+
     - name: Provision and Setup
       run: |
         export LANG=en_US.UTF-8
         export LANGUAGE=en_US:en
         eval "$(ssh-agent -s)"
+        ssh-add ~/.ssh/id_rsa-acceptance
         bundle exec bolt --modulepath spec/fixtures/modules -i ./inventory.yaml plan run satellite_pe_tools::test_01_provision
         bundle exec bolt --modulepath spec/fixtures/modules -i ./inventory.yaml plan run satellite_pe_tools::test_02_server_setup
+
     - name: Inventory
       run: |
         cat ./inventory.yaml
+
     - name: Run tests
       run: |
         env
         bundle exec rake satellite_pe_tools:integration
+
     - name: Tidy up
       if: always()
       run: |
