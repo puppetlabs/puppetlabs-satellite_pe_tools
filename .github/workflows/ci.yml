@@ -1,9 +1,11 @@
-name: "weekly"
+name: "ci"
 
 on:
-  schedule:
-    - cron: '0 0 * * 1'
-
+  pull_request:
+    branches:
+      - "main"
+  workflow_dispatch:
+    
 jobs:
   Spec:
     uses: "puppetlabs/cat-github-actions/.github/workflows/module_ci.yml@main"
