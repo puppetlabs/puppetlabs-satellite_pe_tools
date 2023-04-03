@@ -13,12 +13,16 @@ jobs:
 
   Acceptance:
     needs: "Spec"
-    env:
-      HONEYCOMB_WRITEKEY: 7f3c63a70eecc61d635917de46bea4e6
-      HONEYCOMB_DATASET: litmus tests
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
+
+    - name: Activate Ruby 2.7
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: "2.7"
+        bundler-cache: true
+
     - name: Build
       run: |
         gem install bundler
@@ -42,7 +46,6 @@ jobs:
         export LANG=en_US.UTF-8
         export LANGUAGE=en_US:en
         eval "$(ssh-agent -s)"
-        ssh-add ~/.ssh/id_rsa-acceptance
         bundle exec bolt --modulepath spec/fixtures/modules -i ./inventory.yaml plan run satellite_pe_tools::test_01_provision
         bundle exec bolt --modulepath spec/fixtures/modules -i ./inventory.yaml plan run satellite_pe_tools::test_02_server_setup
     - name: Inventory
