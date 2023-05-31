@@ -71,4 +71,7 @@ def ensure_module_defined(module_name)
   end
 end
 
+shared_context 'RedHat 7' do
+  let(:facts) { on_supported_os['redhat-7-x86_64'] }
+end
 # 'spec_overrides' from sync.yml will appear below this line
