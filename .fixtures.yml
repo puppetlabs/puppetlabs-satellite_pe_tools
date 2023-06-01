@@ -7,5 +7,6 @@ fixtures:
       repo: 'https://github.com/puppetlabs/puppetlabs-puppet_agent.git'
       ref: v4.12.1
     stdlib: 'https://github.com/puppetlabs/puppetlabs-stdlib.git'
+    peadm: 'https://github.com/puppetlabs/puppetlabs-peadm.git'
   symlinks:
     satellite_pe_tools: "#{source_dir}"
