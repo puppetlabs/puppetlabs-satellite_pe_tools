@@ -7,37 +7,26 @@ on:
   workflow_dispatch:
     
 jobs:
-  Spec:
-    uses: "puppetlabs/cat-github-actions/.github/workflows/module_ci.yml@main"
-    with:
-      runs_on: "ubuntu-20.04"
-    secrets: "inherit"
-
+  # Spec:
+  #   uses: "puppetlabs/cat-github-actions/.github/workflows/module_ci.yml@main"
+  #   with:
+  #     runs_on: "ubuntu-20.04"
+  #   secrets: "inherit"
+  #
   Acceptance:
-    needs: "Spec"
+    # needs: "Spec"
     runs-on: ubuntu-20.04
     steps:
     - name: Checkout Source
       uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
 
     - name: Activate Ruby 2.7
       uses: ruby/setup-ruby@v1
       with:
         ruby-version: "2.7"
-
-    - name: Cache gems
-      uses: actions/cache@v3
-      with:
-        path: vendor/gems
-        key: ${{ runner.os }}-pr-${{ hashFiles('**/Gemfile') }}
-        restore-keys: |
-          ${{ runner.os }}-pr-
-          ${{ runner.os }}-
-
-    - name: Bundle Install
-      run: |
-        gem install bundler
-        bundle install
+        bundler-cache: true
 
     - name: Spec Prep
       run: |
@@ -45,31 +34,26 @@ jobs:
         bundle exec rake spec_prep
         echo ::endgroup::
 
-    - name: Provision And Setup
+    - name: Provision
       run: |
-        bundle exec bolt --modulepath spec/fixtures/modules plan run satellite_pe_tools::test_01_provision
-        FILE='spec/fixtures/litmus_inventory.yaml'
-        echo INVENTORY_PATH=$FILE >> $GITHUB_ENV
+        bundle exec rake 'litmus:provision[provision_service, centos-stream-8, {"role": "pe"}]'
+        bundle exec rake 'litmus:provision[provision_service, rhel-8, {"role": "satellite"}]'
 
-    - name: Inventory
+    - name: Install and Configure PE
       run: |
-        cat ./spec/fixtures/litmus_inventory.yaml
+        bundle exec bolt --tmpdir /tmp --log-level debug --modulepath spec/fixtures/modules -i ./spec/fixtures/litmus_inventory.yaml plan run satellite_pe_tools::test_02_server_setup
 
-    # - name: Install PE and Configure
-    #   run: |
-    #     bundle exec bolt --modulepath spec/fixtures/modules -i $INVENTORY_PATH plan run satellite_pe_tools::test_02_server_setup
+    - name: Run provision Tests
+      run: |
+        bundle exec bolt --modulepath spec/fixtures/modules -i ./spec/fixtures/litmus_inventory.yaml plan run satellite_pe_tools::test_03_test_run
 
-    # - name: Run provision Tests
-    #   run: |
-    #     bundle exec bolt --modulepath spec/fixtures/modules -i $INVENTORY_PATH plan run satellite_pe_tools::test_03_test_run
+    - name: Run Integration tests
+      run: |
+        env
+        bundle exec rake satellite_pe_tools:integration
 
-    # - name: Run Integration tests
-    #   run: |
-    #     env
-    #     bundle exec rake satellite_pe_tools:integration
-
-    # - name: Remove test environment
-    #   if: always()
-    #   continue-on-error: true
-    #   run: |
-    #     bundle exec rake litmus:tear_down
+    - name: Remove test environment
+      if: always()
+      continue-on-error: true
+      run: |
+        bundle exec rake litmus:tear_down
