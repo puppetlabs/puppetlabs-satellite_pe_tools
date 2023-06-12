@@ -55,9 +55,9 @@ jobs:
       run: |
         cat ./spec/fixtures/litmus_inventory.yaml
 
-    - name: Install PE and Configure
-      run: |
-        bundle exec bolt --modulepath spec/fixtures/modules -i $INVENTORY_PATH plan run satellite_pe_tools::test_02_server_setup
+    # - name: Install PE and Configure
+    #   run: |
+    #     bundle exec bolt --modulepath spec/fixtures/modules -i $INVENTORY_PATH plan run satellite_pe_tools::test_02_server_setup
 
     # - name: Run provision Tests
     #   run: |
@@ -68,8 +68,8 @@ jobs:
     #     env
     #     bundle exec rake satellite_pe_tools:integration
 
-    - name: Remove test environment
-      if: always()
-      continue-on-error: true
-      run: |
-        bundle exec rake litmus:tear_down
+    # - name: Remove test environment
+    #   if: always()
+    #   continue-on-error: true
+    #   run: |
+    #     bundle exec rake litmus:tear_down
