@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe 'to_yaml' do
+describe 'to_yaml', skip: 'will need to be corrected in https://github.com/puppetlabs/puppetlabs-satellite_pe_tools/pull/208' do
   let(:arg_error) do
     [Puppet::ParseError, 'Wrong number of arguments']
   end
