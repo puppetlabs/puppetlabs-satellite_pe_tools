@@ -13,43 +13,45 @@ jobs:
     needs: "Spec"
     runs-on: self-hosted
     steps:
-    - uses: actions/checkout@v1
-    - name: Build
+    - name: Checkout Source
+      uses: actions/checkout@v3
+
+    - name: Activate Ruby 2.7
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: "2.7"
+        bundler-cache: true
+
+    - name: Print bundle environment
       run: |
-        gem install bundler
-        bundle install --path .bundle/gems --jobs 4 --retry 3
+        echo ::group::bundler environment
+        bundle env
+        echo ::endgroup::
+
+    - name: Create the fixtures directory
+      run: |
+        echo ::group::Create the fixtures directory
         bundle exec rake spec_prep
+        echo ::endgroup::
 
-    - name: Prepare inventory file
+    - name: Provision test environment
       run: |
-        cat <<EOF >> inventory.yaml
-        ---
-        version: 2
-        groups:
-        - name: docker_nodes
-          targets: []
-        - name: ssh_nodes
-          targets: []
-        - name: winrm_nodes
-          targets: []
-        EOF
+        bundle exec bolt --modulepath spec/fixtures/modules plan run satellite_pe_tools::provision
+        FILE='./spec/fixtures/litmus_inventory.yaml'
+        echo INVENTORY_PATH=$FILE >> $GITHUB_ENV
 
-    - name: Provision and Setup
+    - name: Authenticate to GCP
       run: |
-        export LANG=en_US.UTF-8
-        export LANGUAGE=en_US:en
-        eval "$(ssh-agent -s)"
-        ssh-add ~/.ssh/id_rsa-acceptance
-        bundle exec bolt --modulepath spec/fixtures/modules -i ./inventory.yaml plan run satellite_pe_tools::test_01_provision
-        bundle exec bolt --modulepath spec/fixtures/modules -i ./inventory.yaml plan run satellite_pe_tools::test_02_server_setup
+        echo '${{ secrets.GCP_CONNECTION }}' >> creds.json
+        bundle exec bolt file upload creds.json creds.json -t ssh_nodes -i $INVENTORY_PATH
+        bundle exec bolt command run "gcloud auth activate-service-account --key-file creds.json" -t ssh_nodes -i $INVENTORY_PATH
 
-    - name: Inventory
+    - name: Install PE
       run: |
-        cat ./inventory.yaml
+        bundle exec bolt --modulepath spec/fixtures/modules -i ./inventory.yaml plan run satellite_pe_tools::server_setup -i $INVENTORY_PATH
 
     - name: Run tests
       run: |
-        env
         bundle exec rake satellite_pe_tools:integration
 
     - name: Tidy up
