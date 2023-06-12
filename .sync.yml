@@ -12,6 +12,8 @@ Gemfile:
     ":development":
     - gem: github_changelog_generator
       version: '= 1.15.2'
+    - gem: 'rest-client'
+      version: '~> 2.0'
 LICENSE:
   license_type: puppetpe
 NOTICE:
