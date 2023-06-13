@@ -48,7 +48,7 @@ jobs:
 
     - name: Install PE
       run: |
-        bundle exec bolt --modulepath spec/fixtures/modules -i ./inventory.yaml plan run satellite_pe_tools::server_setup install_dir=puppet-enterprise-2019.8.13-rc1-154-gb5f3d9c-el-7-x86_64 -i $INVENTORY_PATH
+        bundle exec bolt --modulepath spec/fixtures/modules plan run satellite_pe_tools::server_setup install_dir=puppet-enterprise-2019.8.13-rc1-154-gb5f3d9c-el-7-x86_64 -i $INVENTORY_PATH
 
     - name: Run tests
       run: |
