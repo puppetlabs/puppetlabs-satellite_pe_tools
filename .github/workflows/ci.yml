@@ -6,18 +6,15 @@ on:
       - "main"
   workflow_dispatch:
 
-env:
-  SERVICE_URL: https://facade-main-increase-default-worker-n-threads-6f3kfepqcq-ew.a.run.app/v1/provision
-
 jobs:
-  # Spec:
-  #   uses: "puppetlabs/cat-github-actions/.github/workflows/module_ci.yml@main"
-  #   with:
-  #     runs_on: "ubuntu-20.04"
-  #   secrets: "inherit"
+  Spec:
+    uses: "puppetlabs/cat-github-actions/.github/workflows/module_ci.yml@main"
+    with:
+      runs_on: "ubuntu-20.04"
+    secrets: "inherit"
 
   Acceptance:
-    # needs: "Spec"
+    needs: "Spec"
     runs-on: ubuntu-20.04
     steps:
     - name: Checkout Source
@@ -48,24 +45,24 @@ jobs:
         FILE='spec/fixtures/litmus_inventory.yaml'
         echo INVENTORY_PATH=$FILE >> $GITHUB_ENV
 
-    - name: Start SSH session
-      uses: luchihoratiu/debug-via-ssh@main
-      with:
-        NGROK_AUTH_TOKEN: ${{ secrets.NGROK_AUTH_TOKEN }}
-        SSH_PASS: ${{ secrets.SSH_PASS }}
-
     - name: Install and Configure PE
       run: |
-        bundle exec bolt --tmpdir /tmp --log-level debug --modulepath spec/fixtures/modules -i $INVENTORY_PATH --no-host-key-check  plan run satellite_pe_tools::test_02_server_setup
+        bundle exec bolt --tmpdir /tmp --log-level debug --modulepath spec/fixtures/modules -i $INVENTORY_PATH --no-host-key-check  plan run satellite_pe_tools::test_02_server_setup --stream
+
+    - name: "Authenticate to GCP"
+      run: |
+        echo '${{ secrets.GCP_CONNECTION }}' >> creds.json
+        bundle exec bolt file upload creds.json creds.json -t ssh_nodes -i $INVENTORY_PATH
+        bundle exec bolt command run "gcloud auth activate-service-account --key-file creds.json" -t ssh_nodes -i $INVENTORY_PATH
 
     - name: Run provision Tests
       run: |
-        bundle exec bolt --modulepath spec/fixtures/modules -i $INVENTORY_PATH plan run satellite_pe_tools::test_03_test_run
+        bundle exec bolt --tmpdir /tmp --modulepath spec/fixtures/modules -i $INVENTORY_PATH plan run satellite_pe_tools::test_03_test_run --stream
 
     - name: Run Integration tests
       run: |
         env
-        bundle exec rake satellite_pe_tools:integration
+        INTEGRATION_TESTS=true bundle exec rake satellite_pe_tools:integration
 
     - name: Remove test environment
       if: always()

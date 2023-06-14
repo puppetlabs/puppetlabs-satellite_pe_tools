@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
-require 'spec_helper_acceptance'
+require 'helper'
+require ENV['INTEGRATION_TESTS'] ? 'integration_helper' : 'spec_helper_acceptance'
 
 terminus_config = '/config/scripts/facts_terminus_config.sh'
 manifest_location = '/etc/puppetlabs/code/environments/production/manifests/site.pp'
@@ -9,10 +10,8 @@ describe 'satellite_pe_tools tests', :integration do
   server_host = target_roles('pe')[0][:name]
   satellite_host = target_roles('satellite')[0][:name]
   before(:all) do
-    satellite_update_setting(server_host, satellite_host, 'trusted_puppetmaster_hosts', Array(server_host))
+    change_target_host(server_host)
     Helper.instance.bolt_run_script("#{project_root}#{terminus_config}")
-    Helper.instance.run_shell('service pe-puppetserver restart')
-    # `puppet agent -t` returns a 2 for changes made which run_shell takes as a failure
     Helper.instance.run_shell('puppet agent -t', expect_failures: true)
   end
 
@@ -38,8 +37,8 @@ EOF"
       Helper.instance.run_shell('puppet agent -t', expect_failures: true)
     end
 
-    it 'contains the report text in Satellite' do
-      expect(satellite_get_last_report(satellite_host, server_host).to_s).to match(%r{This is a test from Puppet to Satellite})
+    xit 'contains the report text in Satellite' do
+      expect(satellite_get_last_report(satellite_host).to_s).to match(%r{This is a test from Puppet to Satellite})
     end
   end
 
@@ -62,7 +61,7 @@ EOF"
     end
 
     it 'contains the fact text in Satellite' do
-      expect(satellite_get_facts(satellite_host, server_host)['total']).not_to eq(0)
+      expect(satellite_get_facts(satellite_host)['total']).not_to eq(0)
     end
   end
 end

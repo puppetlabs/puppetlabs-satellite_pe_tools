@@ -4,15 +4,11 @@ plan satellite_pe_tools::test_02_server_setup(
   $server = get_targets('*').filter |$n| { $n.vars['role'] == 'pe' }
   # install pe server
   $params = {
-    'primary_host' => $server,
-    'console_password' => 'litmus',
+    'pe_settings' => {
+      'password' => 'puppetlabs',
+      'configure_tuning' => false,
+    },
     'version' => '2021.7.4',
   }
-
-  $server.each |$sut| {
-    run_command("iptables -t nat -A OUTPUT -p tcp -d ${sut.uri} --dport 8140 -j REDIRECT", $sut)
-    run_command("iptables -t nat -A OUTPUT -p tcp -d ${sut.uri} --dport 8081 -j REDIRECT", $sut)
-    run_command("iptables -t nat -A OUTPUT -p tcp -d ${sut.uri} --dport 4433 -j REDIRECT", $sut)
-  }
-  run_plan('peadm::install', $params)
+  run_plan('deploy_pe::provision_master', $server, $params)
 }

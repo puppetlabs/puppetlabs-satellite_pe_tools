@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+require 'helper'
+require 'net/scp'
+require 'net/ssh'
 require 'puppet_litmus'
 require 'singleton'
 
@@ -7,8 +10,6 @@ class Helper
   include Singleton
   include PuppetLitmus
 end
-
-SUT_DNS_SERVER = '10.240.1.10'
 
 RSpec.configure do |c|
   # Readable test descriptions
@@ -22,35 +23,36 @@ RSpec.configure do |c|
     satellite = target_roles('satellite')[0][:name]
 
     change_target_host(server)
-    # Make sure the VM is using our internal DNS servers
-    Helper.instance.run_shell("sed -i 's/nameserver.*$/nameserver #{SUT_DNS_SERVER}/' /etc/resolv.conf")
     Helper.instance.run_shell('puppet module install puppetlabs-inifile')
+    Helper.instance.run_shell('puppet module install puppetlabs-satellite_pe_tools')
     Helper.instance.run_shell('puppet resource package subscription-manager ensure=installed')
 
     change_target_host(satellite)
     expand_satellite_disk(satellite) if get_provisioner(satellite) == 'vmpooler' # && satellite['disks']
-    install_satellite(satellite)
+    # Whitelist Satellite EIP in Puppet Server SG with port 8140
+    whitelist_source_range_and_port(server, satellite, 'tcp:8140')
+    # Whitelist Puppet EIP in Satellite Service SG with port 443
+    whitelist_source_range_and_port(satellite, server, 'tcp:443')
+    install_satellite(satellite, server)
+    sing_certs(server)
+    # run_puppet_agent(satellite)
     change_target_host(server)
     generate_and_transfer_satellite_cert_from_sat_to_pe(server, satellite)
+    # Update satellite config
+    satellite_update_setting(server, satellite, 'trusted_hosts', Array(server))
+    # Register Puppet Node on Satellite
+    register_pe_server(satellite, server)
   end
 end
 
-def change_target_host(role)
-  ENV['TARGET_HOST'] = role
+def sing_certs(server)
+  change_target_host(server)
+  Helper.instance.run_shell('puppetserver ca sign --all')
 end
 
-def inventory_hash
-  @inventory_hash ||= Helper.instance.inventory_hash_from_inventory_file
-end
-
-def target_roles(roles)
-  # rubocop:disable Style/MultilineBlockChain
-  inventory_hash['groups'].map { |group|
-    group['targets'].map { |node|
-      { name: node['uri'], role: node['vars']['role'] } if roles.include? node['vars']['role']
-    }.reject { |val| val.nil? }
-  }.flatten
-  # rubocop:enable Style/MultilineBlockChain
+def run_puppet_agent(satellite)
+  change_target_host(satellite)
+  Helper.instance.run_shell('puppet agent -t')
 end
 
 def get_provisioner(host)
@@ -76,28 +78,30 @@ def expand_satellite_disk(_host)
   Helper.instance.run_shell('xfs_growfs /dev/mapper/rhel-root')
 end
 
-def install_satellite(host)
-  Helper.instance.run_shell("grep #{host} /etc/hosts || sed -i 's/satellite/#{host} satellite/' /etc/hosts")
-  Helper.instance.run_shell("sed -i 's/nameserver.*$/nameserver #{SUT_DNS_SERVER}/' /etc/resolv.conf")
-  Helper.instance.bolt_run_script("#{project_root}/config/scripts/redhat_repo.sh")
+def install_satellite(host, server)
+  # Add puppet/satellite master host entry
+  Helper.instance.run_shell("echo '#{server} puppet' >> /etc/hosts ")
+  Helper.instance.run_shell("echo '#{host} satellite' >> /etc/hosts")
   Helper.instance.bolt_run_script("#{project_root}/config/scripts/install_satellite.sh")
 end
 
-def project_root
-  File.expand_path(File.join(File.dirname(__FILE__), '..'))
+def whitelist_source_range_and_port(server, source, port)
+  change_target_host(server)
+  Helper.instance.bolt_run_script("#{project_root}/config/scripts/update_firewall_rules.sh", arguments: ["#{server}/32,#{runner_public_ip}/32,#{source}/32", port])
 end
 
 def generate_and_transfer_satellite_cert_from_sat_to_pe(server, satellite)
   # Swap host to satellite
   change_target_host(satellite)
 
-  Helper.instance.run_shell("capsule-certs-generate --capsule-fqdn #{server} --certs-tar \"~/#{server}-certs.tar\"")
+  Helper.instance.run_shell("capsule-certs-generate --foreman-proxy-fqdn #{server} --certs-tar \"~/#{server}-certs.tar\"")
   # Copy the SSL certs from Satellite to PE
   Helper.instance.run_shell('[ -d /tmp/ssl-build ] || mv /root/ssl-build /tmp')
   Helper.instance.run_shell('chmod -R 0755 /tmp/ssl-build')
 
-  scp_from(satellite, "/tmp/ssl-build/#{server}/#{server}-puppet-client.crt", project_root.to_s)
-  scp_from(satellite, "/tmp/ssl-build/#{server}/#{server}-puppet-client.key", project_root.to_s)
+  satellite_config = target_roles('satellite')[0]
+  scp_from(satellite, "/tmp/ssl-build/#{server}/#{server}-puppet-client.crt", project_root.to_s, satellite_config[:username], satellite_config[:password])
+  scp_from(satellite, "/tmp/ssl-build/#{server}/#{server}-puppet-client.key", project_root.to_s, satellite_config[:username], satellite_config[:password])
 
   # Swap host back to server
   change_target_host(server)
@@ -106,75 +110,51 @@ def generate_and_transfer_satellite_cert_from_sat_to_pe(server, satellite)
   Helper.instance.bolt_upload_file("#{project_root}/#{server}-puppet-client.key", "/tmp/#{server}-puppet-client.key")
 
   Helper.instance.run_shell('mkdir -p /etc/puppetlabs/puppet/ssl/satellite')
+  Helper.instance.run_shell('chown pe-puppet:pe-puppet /etc/puppetlabs/puppet/ssl/satellite')
   Helper.instance.run_shell("cp /tmp/#{server}-puppet-client.crt /etc/puppetlabs/puppet/ssl/satellite/#{server}-puppet-client.crt")
   Helper.instance.run_shell("cp /tmp/#{server}-puppet-client.key /etc/puppetlabs/puppet/ssl/satellite/#{server}-puppet-client.key")
   Helper.instance.run_shell("chown pe-puppet /etc/puppetlabs/puppet/ssl/satellite/#{server}-puppet-client.crt")
   Helper.instance.run_shell("chown pe-puppet /etc/puppetlabs/puppet/ssl/satellite/#{server}-puppet-client.key")
 end
 
-require 'net/ssh'
-require 'net/scp'
-
-def scp_from(host, target, local)
-  Net::SSH.start(host, 'root', host_key: 'ssh-rsa', keys: ['~/.ssh/id_rsa-acceptance']) do |ssh|
-    ssh.scp.download!(target, local)
-  end
-end
-
-require 'json'
-require 'rest-client'
-
-def satellite_post(ip, resource, json_data)
-  url = "https://#{ip}/api/v2/"
-  full_url = url + resource
-
-  begin
-    response = RestClient::Request.new(
-      method: :put,
-      url: full_url,
-      user: 'admin',
-      password: 'puppetlabs',
-      headers: { accept: :json,
-                 content_type: :json },
-      payload: json_data,
-      verify_ssl: false,
-    ).execute
-    _results = JSON.parse(response.to_str)
-  rescue => e
-    puts 'ERROR: ' + e.message
-  end
-end
-
-def satellite_get(ip, resource)
-  url = "https://#{ip}/api/v2/"
-  full_url = url + resource
-
-  begin
-    response = RestClient::Request.new(
-      method: :get,
-      url: full_url,
-      user: 'admin',
-      password: 'puppetlabs',
-      verify_ssl: false,
-      headers: { accept: :json,
-                 content_type: :json },
-    ).execute
-    _results = JSON.parse(response.to_str)
-  rescue => e
-    puts 'ERROR: ' + e.message
+def scp_from(host, target, local, username, password)
+  if username && password
+    Net::SSH.start(host, username, password: password) do |ssh|
+      ssh.scp.download!(target, local)
+    end
+  else
+    Net::SSH.start(host, 'root', host_key: 'ssh-rsa', keys: ['~/.ssh/id_rsa-acceptance']) do |ssh|
+      ssh.scp.download!(target, local)
+    end
   end
 end
 
 def satellite_update_setting(server, satellite, setting, value)
   change_target_host(satellite)
-  Helper.instance.run_shell("hammer --username admin --password puppetlabs settings set --id '#{setting}' --value '#{value}'")
+  Helper.instance.run_shell("hammer --username admin --password puppetlabs settings set --id '#{setting}' --name '#{setting}' --value '#{value}'")
+  # Create activation key
+  # rubocop:disable Layout/LineLength
+  Helper.instance.run_shell("hammer --username admin --password puppetlabs activation-key create --name 'puppetlabs' --unlimited-hosts --description 'Example Stack in the Development Environment' --lifecycle-environment 'Library' --content-view 'Default Organization View' --organization-label Default_Organization")
+  # rubocop:enable Layout/LineLength
+  # add global host params
+  Helper.instance.run_shell("hammer --username admin --password puppetlabs global-parameter set --name puppet_server --value https://#{server}")
+  Helper.instance.run_shell('hammer --username admin --password puppetlabs global-parameter set --name enable-puppet7 --value true')
   change_target_host(server)
 end
 
-def satellite_get_last_report(satellite_host, server_host)
-  satellite_get(satellite_host, "hosts/#{server_host}/reports/last")
+def runner_public_ip
+  @runner_public_ip ||= Net::HTTP.get(URI('https://api.ipify.org'))
 end
 
-def satellite_get_facts(satellite_host, server_host)
-  satellite_get(satellite_host, "hosts/#{server_host}/facts")
+def register_pe_server(satellite, server)
+  change_target_host(server)
+  Helper.instance.run_shell("curl -ksS -u 'admin:puppetlabs' https://#{satellite}/register > /tmp/register.sh")
+  Helper.instance.run_shell("sed -i 's/curl/curl -k/g' /tmp/register.sh")
+  Helper.instance.run_shell("sed -i \"s/--activationkey=''/--activationkey='puppetlabs' --force/g\" /tmp/register.sh")
+  Helper.instance.run_shell('chmod 755 /tmp/register.sh && /tmp/register.sh')
+  Helper.instance.run_shell('/tmp/register.sh')
+end
+
+def inventory_hash
+  @inventory_hash ||= Helper.instance.inventory_hash_from_inventory_file
 end
