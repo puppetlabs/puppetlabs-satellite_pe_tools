@@ -28,11 +28,6 @@ jobs:
         ruby-version: "2.7"
         bundler-cache: true
 
-    - name: Bundle Install
-      run: |
-        gem install bundler
-        bundle install
-
     - name: Spec Prep
       run: |
         echo ::group::Create the fixtures directory
