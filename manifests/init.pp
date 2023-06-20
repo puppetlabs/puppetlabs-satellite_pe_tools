@@ -65,7 +65,7 @@ class satellite_pe_tools (
   file { 'satellite_config_yaml':
     ensure  => file,
     path    => '/etc/puppetlabs/puppet/satellite_pe_tools.yaml',
-    content => to_yaml($satellite_config),
+    content => $satellite_config.to_yaml,
     owner   => pe-puppet,
     group   => pe-puppet,
     mode    => '0644',

@@ -2,13 +2,13 @@
 
 if ! [ -d /opt/satellite ]; then
   mkdir -p /mnt/iso
-  curl https://artifactory.delivery.puppetlabs.net/artifactory/list/generic/module_ci_resources/carl/satellite-6.2.7-rhel-7-x86_64-dvd.iso > /tmp/satellite-6.2.7-rhel-7-x86_64-dvd.iso
-  mount /tmp/satellite-6.2.7-rhel-7-x86_64-dvd.iso -o loop /mnt/iso
+  /usr/bin/gsutil cp gs://artifactory-modules/satellite-6.13.1-rhel-8-x86_64.dvd.iso /tmp/satellite-6.13.1-rhel-8-x86_64.dvd.iso
+  mount /tmp/satellite-6.13.1-rhel-8-x86_64.dvd.iso -o loop /mnt/iso
   
   cd /mnt/iso
   /mnt/iso/install_packages
 
-  satellite-installer --scenario satellite  --foreman-admin-password "puppetlabs"
-
   puppet agent -t
+
+  satellite-installer --scenario satellite --enable-puppet --enable-foreman-cli-puppet --foreman-initial-admin-password "puppetlabs" --tuning development -l DEBUG
 fi

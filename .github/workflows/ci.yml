@@ -5,56 +5,62 @@ on:
     branches:
       - "main"
   workflow_dispatch:
-    
+
 jobs:
   Spec:
     uses: "puppetlabs/cat-github-actions/.github/workflows/module_ci.yml@main"
+    with:
+      runs_on: "ubuntu-20.04"
     secrets: "inherit"
 
   Acceptance:
     needs: "Spec"
-    runs-on: self-hosted
+    runs-on: ubuntu-20.04
     steps:
-    - uses: actions/checkout@v1
-    - name: Build
+    - name: Checkout Source
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - name: Activate Ruby 2.7
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: "2.7"
+        bundler-cache: true
+
+    - name: Spec Prep
       run: |
-        gem install bundler
-        bundle install --path .bundle/gems --jobs 4 --retry 3
+        echo ::group::Create the fixtures directory
         bundle exec rake spec_prep
+        echo ::endgroup::
 
-    - name: Prepare inventory file
+    - name: Provision
       run: |
-        cat <<EOF >> inventory.yaml
-        ---
-        version: 2
-        groups:
-        - name: docker_nodes
-          targets: []
-        - name: ssh_nodes
-          targets: []
-        - name: winrm_nodes
-          targets: []
-        EOF
+        bundle exec bolt --log-level debug --modulepath spec/fixtures/modules plan run satellite_pe_tools::test_01_provision
+        FILE='spec/fixtures/litmus_inventory.yaml'
+        echo INVENTORY_PATH=$FILE >> $GITHUB_ENV
 
-    - name: Provision and Setup
+    - name: Install and Configure PE
       run: |
-        export LANG=en_US.UTF-8
-        export LANGUAGE=en_US:en
-        eval "$(ssh-agent -s)"
-        ssh-add ~/.ssh/id_rsa-acceptance
-        bundle exec bolt --modulepath spec/fixtures/modules -i ./inventory.yaml plan run satellite_pe_tools::test_01_provision
-        bundle exec bolt --modulepath spec/fixtures/modules -i ./inventory.yaml plan run satellite_pe_tools::test_02_server_setup
+        bundle exec bolt --tmpdir /tmp --log-level debug --modulepath spec/fixtures/modules -i $INVENTORY_PATH --no-host-key-check  plan run satellite_pe_tools::test_02_server_setup --stream
 
-    - name: Inventory
+    - name: "Authenticate to GCP"
       run: |
-        cat ./inventory.yaml
+        echo '${{ secrets.GCP_CONNECTION }}' >> creds.json
+        bundle exec bolt file upload creds.json creds.json -t ssh_nodes -i $INVENTORY_PATH
+        bundle exec bolt command run "gcloud auth activate-service-account --key-file creds.json" -t ssh_nodes -i $INVENTORY_PATH
 
-    - name: Run tests
+    - name: Run provision Tests
+      run: |
+        bundle exec bolt --tmpdir /tmp --modulepath spec/fixtures/modules -i $INVENTORY_PATH plan run satellite_pe_tools::test_03_test_run --stream
+
+    - name: Run Integration tests
       run: |
         env
-        bundle exec rake satellite_pe_tools:integration
+        INTEGRATION_TESTS=true bundle exec rake satellite_pe_tools:integration
 
-    - name: Tidy up
+    - name: Remove test environment
       if: always()
+      continue-on-error: true
       run: |
         bundle exec rake litmus:tear_down

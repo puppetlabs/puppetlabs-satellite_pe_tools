@@ -7,5 +7,7 @@ fixtures:
       repo: 'https://github.com/puppetlabs/puppetlabs-puppet_agent.git'
       ref: v4.12.1
     stdlib: 'https://github.com/puppetlabs/puppetlabs-stdlib.git'
+    ruby_task_helper: 'https://git@github.com/puppetlabs/puppetlabs-ruby_task_helper.git'
+    deploy_pe: 'https://github.com/jarretlavallee/puppet-deploy_pe.git'
   symlinks:
     satellite_pe_tools: "#{source_dir}"
