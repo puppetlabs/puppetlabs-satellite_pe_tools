@@ -13,6 +13,7 @@ module Puppet::Util::Satellite
   # Get satellite_pe_tools_settings
   def settings
     return @settings if @settings
+
     $settings_file = '/etc/puppetlabs/puppet/satellite_pe_tools.yaml' # rubocop:disable Style/GlobalVars
 
     @settings = YAML.load_file($settings_file) # rubocop:disable Style/GlobalVars
@@ -86,23 +87,19 @@ module Puppet::Util::Satellite
         h = translate_metrics_to26(m)
         mv = metrics[h[:type]]
         report_status[m] = begin
-                             mv[h[:name].to_sym] + mv[h[:name].to_s]
-                           rescue
-                             nil
-                           end
+          mv[h[:name].to_sym] + mv[h[:name].to_s]
+        rescue StandardError
+          nil
+        end
       end
       report_status[m] ||= 0
     end
 
     # special fix for false warning about skips
     # sometimes there are skip values, but there are no error messages, we ignore them.
-    if report_status['skipped'] > 0 && (report_status.values.sum - report_status['skipped'] == report.logs.size)
-      report_status['skipped'] = 0
-    end
+    report_status['skipped'] = 0 if report_status['skipped'].positive? && (report_status.values.sum - report_status['skipped'] == report.logs.size)
     # fix for reports that contain no metrics (i.e. failed catalog)
-    if @format > 1 && report.respond_to?(:status) && report.status == 'failed'
-      report_status['failed'] += 1
-    end
+    report_status['failed'] += 1 if @format > 1 && report.respond_to?(:status) && report.status == 'failed'
     # fix for Puppet non-resource errors (i.e. failed catalog fetches before falling back to cache)
     report_status['failed'] += report.logs.count { |l| l.source =~ %r{Puppet$} && l.level.to_s == 'err' }
 

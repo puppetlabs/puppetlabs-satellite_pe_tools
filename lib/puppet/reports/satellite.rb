@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require __dir__ + '/../util/satellite.rb'
+require "#{__dir__}/../util/satellite.rb"
 
 Puppet::Reports.register_report(:satellite) do
   Puppet.settings.use(:reporting)

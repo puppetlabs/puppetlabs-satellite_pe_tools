@@ -15,7 +15,7 @@ if defined? Oscar
         vm_config.provision :reload
       end
     end
- 
+
     ::ConfigBuilder::Model::Provisioner.register('reload', self)
   end
 
