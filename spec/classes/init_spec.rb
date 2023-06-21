@@ -9,6 +9,7 @@ describe 'satellite_pe_tools' do
     on_supported_os.each do |os, facts|
       context "On #{os}" do
         let(:facts) { facts }
+
         it { is_expected.to contain_class('satellite_pe_tools') }
       end
     end

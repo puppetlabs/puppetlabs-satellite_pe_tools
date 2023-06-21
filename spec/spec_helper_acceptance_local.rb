@@ -141,7 +141,7 @@ def satellite_update_setting(server, satellite, setting, value)
 end
 
 def runner_public_ip
-  @runner_public_ip ||= Net::HTTP.get(URI('https://api.ipify.org'))
+  @runner_public_ip ||= Net::HTTP.get(URI('http://ifconfig.me'))
 end
 
 def register_pe_server(satellite, server)
