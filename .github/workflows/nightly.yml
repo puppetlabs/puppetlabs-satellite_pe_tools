@@ -1,0 +1,65 @@
+name: "nightly"
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+
+jobs:
+  Spec:
+    uses: "puppetlabs/cat-github-actions/.github/workflows/module_ci.yml@main"
+    with:
+      runs_on: "ubuntu-20.04"
+    secrets: "inherit"
+
+  Acceptance:
+    needs: "Spec"
+    runs-on: ubuntu-20.04
+    steps:
+    - name: Checkout Source
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - name: Activate Ruby 2.7
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: "2.7"
+        bundler-cache: true
+
+    - name: Spec Prep
+      run: |
+        echo ::group::Create the fixtures directory
+        bundle exec rake spec_prep
+        echo ::endgroup::
+
+    - name: Provision
+      run: |
+        bundle exec bolt --log-level debug --modulepath spec/fixtures/modules plan run satellite_pe_tools::test_01_provision
+        FILE='spec/fixtures/litmus_inventory.yaml'
+        echo INVENTORY_PATH=$FILE >> $GITHUB_ENV
+
+    - name: Install and Configure PE
+      run: |
+        bundle exec bolt --tmpdir /tmp --log-level debug --modulepath spec/fixtures/modules -i $INVENTORY_PATH --no-host-key-check  plan run satellite_pe_tools::test_02_server_setup --stream
+
+    - name: "Authenticate to GCP"
+      run: |
+        echo '${{ secrets.GCP_CONNECTION }}' >> creds.json
+        bundle exec bolt file upload creds.json creds.json -t ssh_nodes -i $INVENTORY_PATH
+        bundle exec bolt command run "gcloud auth activate-service-account --key-file creds.json" -t ssh_nodes -i $INVENTORY_PATH
+
+    - name: Run provision Tests
+      run: |
+        bundle exec bolt --tmpdir /tmp --modulepath spec/fixtures/modules -i $INVENTORY_PATH plan run satellite_pe_tools::test_03_test_run --stream
+
+    - name: Run Integration tests
+      run: |
+        env
+        INTEGRATION_TESTS=true bundle exec rake satellite_pe_tools:integration
+
+    - name: Remove test environment
+      if: always()
+      continue-on-error: true
+      run: |
+        bundle exec rake litmus:tear_down
