@@ -4,14 +4,12 @@ require 'json'
 require 'rest-client'
 
 def target_roles(roles)
-  # rubocop:disable Style/MultilineBlockChain
   inventory_hash['groups'].map { |group|
     group['targets'].map { |node|
       ssh_config = node['config']['ssh'] || {}
       { name: node['uri'], role: node['vars']['role'], username: ssh_config['user'], password: ssh_config['password'] } if roles.include? node['vars']['role']
-    }.reject { |val| val.nil? }
+    }.reject(&:nil?)
   }.flatten
-  # rubocop:enable Style/MultilineBlockChain
 end
 
 def change_target_host(role)
@@ -34,8 +32,8 @@ def satellite_post(ip, resource, json_data)
       verify_ssl: false,
     ).execute
     _results = JSON.parse(response.to_str)
-  rescue => e
-    puts 'ERROR: ' + e.message
+  rescue StandardError => e
+    puts "ERROR: #{e.message}"
   end
 end
 
@@ -54,8 +52,8 @@ def satellite_get(ip, resource)
                  content_type: :json },
     ).execute
     _results = JSON.parse(response.to_str)
-  rescue => e
-    puts 'ERROR: ' + e.message
+  rescue StandardError => e
+    puts "ERROR: #{e.message}"
   end
 end
 

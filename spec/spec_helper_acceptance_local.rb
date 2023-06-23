@@ -56,13 +56,11 @@ def run_puppet_agent(satellite)
 end
 
 def get_provisioner(host)
-  # rubocop:disable Style/MultilineBlockChain
   inventory_hash['groups'].map { |group|
     group['targets'].map { |node|
       node['facts']['provisioner'] if host == node['uri']
-    }.reject { |val| val.nil? }
+    }.reject(&:nil?)
   }.flatten
-  # rubocop:enable Style/MultilineBlockChain
 end
 
 def expand_satellite_disk(_host)
@@ -143,7 +141,7 @@ def satellite_update_setting(server, satellite, setting, value)
 end
 
 def runner_public_ip
-  @runner_public_ip ||= Net::HTTP.get(URI('https://api.ipify.org'))
+  @runner_public_ip ||= Net::HTTP.get(URI('http://ifconfig.me'))
 end
 
 def register_pe_server(satellite, server)
