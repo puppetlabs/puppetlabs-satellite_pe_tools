@@ -19,7 +19,7 @@ The `satellite_pe_tools` module configures Puppet's report processor and facts i
 
 ### Setup requirements
 
-This module requires Red Hat Satellite 6.2 and Puppet Enterprise (PE) 2016.4 or later.
+This module requires Red Hat Satellite 6.13 and Puppet Enterprise (PE) 2021.7.4 or later.
 
 ### Beginning with satellite_pe_tools
 
@@ -51,7 +51,7 @@ parameter to the `puppet_enterprise::profile::server` class with a string value 
 
    If the Satellite SSL certificate is signed by a remote CA, copy the remote CA's certificate to each Puppet server, and then set the `ssl_ca` parameter for the `satellite_pe_tools` class to the file path of the CA certificate.
 
-   If you do not wish to verify the identity of the Satellite server, you can set the[`verify_satellite_certificate`](#verify_satellite_certificate) parameter for the `satellite_pe_tools` class to `false`.
+   If you do not wish to verify the identity of the Satellite server, you can set the [`verify_satellite_certificate`](#verify_satellite_certificate) parameter for the `satellite_pe_tools` class to `false`.
 
 4. Allow the Satellite server to verify the Puppet server's identity
 
@@ -108,23 +108,36 @@ chown pe-puppet /etc/puppetlabs/puppet/ssl/satellite/puppet.example.com-puppet-c
 chown pe-puppet /etc/puppetlabs/puppet/ssl/satellite/puppet.example.com-puppet-client.key
 ```
 
-f. In the Satellite UI, go to *Administer -> Settings -> Auth* and set the `restrict_registered_smart_proxies` parameter to `true`. Additionally, add your Puppet server's FQDN to the `trusted_hosts` array on the same page; for example, `[puppet.example.com]`.
+f. In the Satellite UI, go to *Administer -> Settings -> Auth* and set the `restrict_registered_smart_proxies` parameter to `Yes`. Additionally, add your Puppet server's FQDN to the `trusted_hosts` array on the same page; for example, `[puppet.example.com]`.
 
 `trusted_hosts` has been given the label "Trusted hosts" in the UX. You can see the actual setting names by mousing over the label.
 
 g. Set the `ssl_cert` and `ssl_key` parameters in your `satellite_pe_tools` class to the location on your Puppet server of the two files respectively.
 
-If you do not want the Satellite server to verify the Puppet server identity, then in the Satellite UI, go to *Administer -> Settings -> Auth* and set the `restrict_registered_smart_proxies` parameter to `false`.
+If you do not want the Satellite server to verify the Puppet server identity, then in the Satellite UI, go to *Administer -> Settings -> Auth* and set the `restrict_registered_smart_proxies` parameter to `No`.
 
 Note that this setting presents a security risk. False reports and facts can be sent to Satellite by a malicious system masquerading as a current Puppet server on your infrastructure that's been added to Satellite as a safe server.
 
-5. Enable pluginsync and reports in Puppet
+5. Configure Satellite Service to onboading hosts
+To onboard a host to the Satellite server, you will need to configure an activation key and two global variables:
+`puppet_server= Puppet Master FQDN` 
+`enable-puppet7=true`.
+*Activation Key*
+```
+hammer --username <username> --password <password> activation-key create --name <activation-key-name> --unlimited-hosts --description 'Example Stack in the Development Environment' --lifecycle-environment 'Library' --content-view 'Default Organization View' --organization-label <organization_label_name>
+```
+*Global Parameters*
+```
+hammer --username admin --password puppetlabs global-parameter set --name puppet_server --value <Puppet-Server-FQDN>
+hammer --username admin --password puppetlabs global-parameter set --name enable-puppet7 --value true
+```
 
-On each Puppet agent, make sure the [`pluginsync`](https://docs.puppet.com/latest/configuration.html#pluginsync) and [`report`](https://docs.puppet.com/latest/configuration.html#report) settings are enabled. These settings are usually enabled by default.
+6. Enable reports in Puppet
+
+On each Puppet agent, make sure the [`report`](https://www.puppet.com/docs/puppet/7/reporting_about.html) setting is enabled. This setting is usually enabled by default.
 
         [agent]
         report = true
-        pluginsync = true
 
 ## Usage
 
