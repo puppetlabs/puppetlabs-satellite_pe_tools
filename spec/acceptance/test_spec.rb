@@ -12,6 +12,7 @@ describe 'satellite_pe_tools tests', :integration do
   before(:all) do
     change_target_host(server_host)
     Helper.instance.bolt_run_script("#{project_root}#{terminus_config}")
+    Helper.instance.run_shell("sed -i 's/#{server_host}/#{satellite_host}/g' /etc/puppetlabs/puppet/puppet.conf", expect_failures: true)
     Helper.instance.run_shell('puppet agent -t', expect_failures: true)
   end
 

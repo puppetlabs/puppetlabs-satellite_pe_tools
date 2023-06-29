@@ -66,7 +66,7 @@ def satellite_get_facts(satellite_host)
 end
 
 def satellite_hostname(satellite_host)
-  @satellite_hostname ||= satellite_get(satellite_host, 'hosts')['results'].last['name']
+  @satellite_hostname ||= satellite_get(satellite_host, 'hosts')['results'].find { |host| host['operatingsystem_name'].match(%r{CentOS|centos}) }['name']
 end
 
 def project_root
