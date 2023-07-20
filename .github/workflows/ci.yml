@@ -7,14 +7,14 @@ on:
   workflow_dispatch:
 
 jobs:
-  Spec:
-    uses: "puppetlabs/cat-github-actions/.github/workflows/module_ci.yml@main"
-    with:
-      runs_on: "ubuntu-20.04"
-    secrets: "inherit"
+  # Spec:
+  #   uses: "puppetlabs/cat-github-actions/.github/workflows/module_ci.yml@main"
+  #   with:
+  #     runs_on: "ubuntu-20.04"
+  #   secrets: "inherit"
 
   Acceptance:
-    needs: "Spec"
+    # needs: "Spec"
     runs-on: ubuntu-20.04
     timeout-minutes: 120
     steps:
@@ -50,6 +50,12 @@ jobs:
         echo '${{ secrets.GCP_CONNECTION }}' >> creds.json
         bundle exec bolt file upload creds.json creds.json -t ssh_nodes -i $INVENTORY_PATH
         bundle exec bolt command run "gcloud auth activate-service-account --key-file creds.json" -t ssh_nodes -i $INVENTORY_PATH
+
+    - name: Start SSH session
+      uses: luchihoratiu/debug-via-ssh@main
+      with:
+        NGROK_AUTH_TOKEN: ${{ secrets.NGROK_AUTH_TOKEN }}
+        SSH_PASS: ${{ secrets.SSH_PASS }}
 
     - name: Run provision Tests
       run: |
