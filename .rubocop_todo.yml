@@ -65,6 +65,7 @@ RSpec/DescribeClass:
     - 'spec/acceptance/test_spec.rb'
     - 'spec/classes/init_spec.rb'
     - 'spec/functions/parse_url_spec.rb'
+    - 'spec/functions/puppet_csr_attributes_yaml_spec.rb'
 
 # Offense count: 2
 # Configuration parameters: CountAsOne.
@@ -77,6 +78,7 @@ RSpec/ExampleLength:
 RSpec/NamedSubject:
   Exclude:
     - 'spec/functions/parse_url_spec.rb'
+    - 'spec/functions/puppet_csr_attributes_yaml_spec.rb'
 
 # Offense count: 1
 Style/MixinUsage:

@@ -87,7 +87,7 @@ yum -t -y -e 0 install puppet-agent
 
 echo "Setting Puppet Certificate Extensions"
 cat > /etc/puppetlabs/puppet/csr_attributes.yaml << EOF
-<%= snippet 'puppet_csr_attributes.yaml' %>
+<%= satellite_pe_tools::puppet_csr_attributes_yaml(@host)%>
 EOF
 
 echo "Configuring puppet"  
