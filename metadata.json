@@ -6,7 +6,7 @@
   "license": "proprietary",
   "source": "https://github.com/puppetlabs/puppetlabs-satellite_pe_tools",
   "project_page": "https://github.com/puppetlabs/puppetlabs-satellite_pe_tools",
-  "issues_url": "https://tickets.puppetlabs.com/browse/MODULES",
+  "issues_url": "https://github.com/puppetlabs/puppetlabs-satellite_pe_tools/issues",
   "dependencies": [
     {
       "name": "puppetlabs-inifile",
