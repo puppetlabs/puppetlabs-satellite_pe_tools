@@ -88,8 +88,8 @@ module Puppet::Util::Satellite
         mv = metrics[h[:type]]
         report_status[m] = begin
           mv[h[:name].to_sym] + mv[h[:name].to_s]
-        rescue StandardError
-          nil
+                           rescue StandardError
+                             nil
         end
       end
       report_status[m] ||= 0
