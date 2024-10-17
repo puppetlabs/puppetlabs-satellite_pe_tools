@@ -129,6 +129,7 @@ end
 
 def satellite_update_setting(server, satellite, setting, value)
   change_target_host(satellite)
+  Helper.instance.run_shell('foreman-rake apipie:cache')
   Helper.instance.run_shell("hammer --username admin --password puppetlabs settings set --id '#{setting}' --name '#{setting}' --value '#{value}'")
   # Create activation key
   # rubocop:disable Layout/LineLength

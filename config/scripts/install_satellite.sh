@@ -10,5 +10,7 @@ if ! [ -d /opt/satellite ]; then
 
   puppet agent -t
 
+  setenforce 0
   satellite-installer --scenario satellite --enable-puppet --enable-foreman-cli-puppet --foreman-initial-admin-password "puppetlabs" --tuning development -l DEBUG
+  setenforce 1
 fi

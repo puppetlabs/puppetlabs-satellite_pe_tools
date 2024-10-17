@@ -52,7 +52,7 @@ jobs:
 
     - name: Run provision Tests
       run: |
-        bundle exec bolt --tmpdir /tmp --modulepath spec/fixtures/modules -i $INVENTORY_PATH plan run satellite_pe_tools::test_03_test_run --stream
+        bundle exec bolt --tmpdir /tmp --log-level debug --modulepath spec/fixtures/modules -i $INVENTORY_PATH plan run satellite_pe_tools::test_03_test_run --stream
 
     - name: Run Integration tests
       run: |
