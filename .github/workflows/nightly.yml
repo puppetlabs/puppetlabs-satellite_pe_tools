@@ -16,7 +16,16 @@ jobs:
     needs: "Spec"
     runs-on: ubuntu-24.04
     timeout-minutes: 120
+
+    env:
+      TWINGATE_PUBLIC_REPO_KEY: ${{ secrets.TWINGATE_PUBLIC_REPO_KEY }}
+
     steps:
+    - name: "Install Twingate"
+      uses: "twingate/github-action@v1"
+      with:
+        service-key: ${{ env.TWINGATE_PUBLIC_REPO_KEY }}
+
     - name: Checkout Source
       uses: actions/checkout@v3
       with:
