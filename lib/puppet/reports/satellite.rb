@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative './../util/satellite'
+require_relative '../util/satellite'
 
 Puppet::Reports.register_report(:satellite) do
   Puppet.settings.use(:reporting)
