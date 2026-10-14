@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative './../../util/satellite'
+require_relative '../../util/satellite'
 require 'puppet/indirector/facts/puppetdb'
 
 # satellite.rb
@@ -23,6 +23,6 @@ class Puppet::Node::Facts::Satellite < Puppet::Node::Facts::Puppetdb
       Puppet.err "Could not send facts to Satellite: #{e}\n#{e.backtrace}"
     end
 
-    super(request)
+    super
   end
 end

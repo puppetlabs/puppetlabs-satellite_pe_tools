@@ -110,7 +110,7 @@ module Puppet::Util::Satellite
     h = {}
     metrics.each do |_title, mtype|
       h[mtype.name] ||= {}
-      mtype.values.each { |m| h[mtype.name].merge!(m[0].to_s => m[2]) } # Puppet::Util::Metric doesn't have `each_value` # rubocop:disable Style/HashEachMethods
+      mtype.values.each { |m| h[mtype.name].merge!(m[0].to_s => m[2]) } # Puppet::Util::Metric doesn't have `each_value`
     end
     h
   end
