@@ -8,7 +8,7 @@ plan satellite_pe_tools::test_02_server_setup(
       'password' => 'puppetlabs',
       'configure_tuning' => false,
     },
-    'version' => '2021.7.4',
+    'version' => '2021.7.6',
   }
   run_plan('deploy_pe::provision_master', $server, $params)
 }
